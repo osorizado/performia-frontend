@@ -1,0 +1,264 @@
+<div class="evaluaciones-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando evaluaciones...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" class="evaluaciones-content">
+    <!-- Header -->
+    <div class="evaluaciones-header">
+      <div class="header-content">
+        <h1>Evaluaciones</h1>
+        <p class="subtitle">Gestiona las evaluaciones de desempeño de tu equipo</p>
+      </div>
+    </div>
+
+    <!-- Tabs de navegación -->
+    <div class="tabs-container">
+      <button 
+        class="tab-btn" 
+        [class.active]="tabActivo === 'pendientes'"
+        (click)="cambiarTab('pendientes')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Pendientes
+        <span class="badge-count" *ngIf="evaluacionesPendientes.length > 0">{{ evaluacionesPendientes.length }}</span>
+      </button>
+      
+      <button 
+        class="tab-btn" 
+        [class.active]="tabActivo === 'completadas'"
+        (click)="cambiarTab('completadas')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Completadas
+      </button>
+      
+      <button 
+        class="tab-btn" 
+        [class.active]="tabActivo === 'historial'"
+        (click)="cambiarTab('historial')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        Historial
+      </button>
+    </div>
+
+    <!-- TAB: Evaluaciones Pendientes -->
+    <div *ngIf="tabActivo === 'pendientes'" class="tab-content">
+      <div class="section-header">
+        <h2>Evaluaciones Pendientes por Completar</h2>
+        <p class="section-subtitle">Colaboradores que necesitan ser evaluados</p>
+      </div>
+
+      <div *ngIf="evaluacionesPendientes.length > 0" class="evaluaciones-grid">
+        <div *ngFor="let evaluacion of evaluacionesPendientes" class="evaluacion-card">
+          <div class="card-header">
+            <div class="colaborador-avatar">
+              {{ evaluacion.colaborador.nombre.charAt(0) }}{{ evaluacion.colaborador.apellido.charAt(0) }}
+            </div>
+            <div class="colaborador-info">
+              <h3>{{ evaluacion.colaborador.nombre }} {{ evaluacion.colaborador.apellido }}</h3>
+              <p class="cargo">{{ evaluacion.colaborador.cargo }}</p>
+              <p class="periodo">Periodo: {{ evaluacion.periodo }}</p>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="info-row">
+              <div class="info-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Fecha límite: {{ evaluacion.fecha_limite | date: 'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="info-item" [ngClass]="{'text-danger': getDiasRestantes(evaluacion.fecha_limite) < 7}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span *ngIf="getDiasRestantes(evaluacion.fecha_limite) > 0">
+                  {{ getDiasRestantes(evaluacion.fecha_limite) }} días restantes
+                </span>
+                <span *ngIf="getDiasRestantes(evaluacion.fecha_limite) <= 0" class="text-danger">
+                  ¡Vencida!
+                </span>
+              </div>
+            </div>
+
+            <div class="autoevaluacion-status" *ngIf="evaluacion.autoevaluacion_completada">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Autoevaluación completada</span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-primary" (click)="iniciarEvaluacion(evaluacion.colaborador.id_usuario)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Evaluar Ahora
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="evaluacionesPendientes.length === 0" class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h2>No hay evaluaciones pendientes</h2>
+        <p>Todos tus colaboradores han sido evaluados en el periodo actual</p>
+      </div>
+    </div>
+
+    <!-- TAB: Evaluaciones Completadas -->
+    <div *ngIf="tabActivo === 'completadas'" class="tab-content">
+      <div class="section-header">
+        <h2>Evaluaciones Completadas</h2>
+        <p class="section-subtitle">Evaluaciones que has completado recientemente</p>
+      </div>
+
+      <div *ngIf="evaluacionesCompletadas.length > 0" class="evaluaciones-list">
+        <div *ngFor="let evaluacion of evaluacionesCompletadas" class="evaluacion-item">
+          <div class="item-avatar">
+            {{ evaluacion.colaborador.nombre.charAt(0) }}{{ evaluacion.colaborador.apellido.charAt(0) }}
+          </div>
+          
+          <div class="item-info">
+            <h3>{{ evaluacion.colaborador.nombre }} {{ evaluacion.colaborador.apellido }}</h3>
+            <p class="cargo">{{ evaluacion.colaborador.cargo }}</p>
+          </div>
+
+          <div class="item-details">
+            <div class="detail-item">
+              <span class="label">Periodo:</span>
+              <span class="value">{{ evaluacion.periodo }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Fecha:</span>
+              <span class="value">{{ evaluacion.fecha_completada | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Puntuación:</span>
+              <span class="value puntuacion">{{ evaluacion.puntuacion_final }}/5.0</span>
+            </div>
+          </div>
+
+          <div class="item-actions">
+            <button class="btn-secondary btn-sm" (click)="verDetalleEvaluacion(evaluacion.id)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Ver Detalle
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="evaluacionesCompletadas.length === 0" class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h2>No hay evaluaciones completadas</h2>
+        <p>Aún no has completado ninguna evaluación</p>
+      </div>
+    </div>
+
+    <!-- TAB: Historial -->
+    <div *ngIf="tabActivo === 'historial'" class="tab-content">
+      <div class="section-header">
+        <h2>Historial de Evaluaciones</h2>
+        <p class="section-subtitle">Todas las evaluaciones realizadas</p>
+      </div>
+
+      <!-- Filtros -->
+      <div class="filters-bar">
+        <div class="filter-group">
+          <label for="filtroPeriodo">Periodo:</label>
+          <select id="filtroPeriodo" [(ngModel)]="filtroPeriodo" class="filter-select">
+            <option value="todos">Todos los periodos</option>
+            <option value="2025-Q4">Q4 2025</option>
+            <option value="2025-Q3">Q3 2025</option>
+            <option value="2025-Q2">Q2 2025</option>
+            <option value="2025-Q1">Q1 2025</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filtroColaborador">Colaborador:</label>
+          <select id="filtroColaborador" [(ngModel)]="filtroColaborador" class="filter-select">
+            <option value="todos">Todos</option>
+            <option *ngFor="let col of getColaboradoresUnicos()" [value]="col.id_usuario">
+              {{ col.nombre }} {{ col.apellido }}
+            </option>
+          </select>
+        </div>
+
+        <div class="results-count">
+          {{ historialFiltrado.length }} evaluación(es) encontrada(s)
+        </div>
+      </div>
+
+      <div *ngIf="historialFiltrado.length > 0" class="evaluaciones-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Colaborador</th>
+              <th>Cargo</th>
+              <th>Periodo</th>
+              <th>Fecha</th>
+              <th>Puntuación</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let evaluacion of historialFiltrado">
+              <td>
+                <div class="table-colaborador">
+                  <div class="mini-avatar">
+                    {{ evaluacion.colaborador.nombre.charAt(0) }}{{ evaluacion.colaborador.apellido.charAt(0) }}
+                  </div>
+                  <span>{{ evaluacion.colaborador.nombre }} {{ evaluacion.colaborador.apellido }}</span>
+                </div>
+              </td>
+              <td>{{ evaluacion.colaborador.cargo }}</td>
+              <td>{{ evaluacion.periodo }}</td>
+              <td>{{ evaluacion.fecha_completada | date: 'dd/MM/yyyy' }}</td>
+              <td>
+                <span class="puntuacion-badge">{{ evaluacion.puntuacion_final }}/5.0</span>
+              </td>
+              <td>
+                <span class="badge badge-success">Completada</span>
+              </td>
+              <td>
+                <button class="btn-icon" (click)="verDetalleEvaluacion(evaluacion.id)" title="Ver detalle">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="historialFiltrado.length === 0" class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        <h2>No hay evaluaciones en el historial</h2>
+        <p>No se encontraron evaluaciones con los filtros seleccionados</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,281 @@
+<div class="reportes-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando reportes...</p>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div *ngIf="!loading" class="reportes-content">
+    
+    <!-- Header -->
+    <div class="reportes-header">
+      <div class="header-content">
+        <h1>📊 Reportes Consolidados</h1>
+        <p class="subtitle">Análisis y visualización de resultados de evaluación</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="toggleFiltros()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Filtros
+        </button>
+        <button class="btn-primary" (click)="exportarPDF()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+          </svg>
+          Descargar PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel de Filtros (Colapsable) -->
+    <div class="filtros-panel" *ngIf="mostrarFiltros">
+      <div class="filtros-content">
+        <h3>Filtros de Reporte</h3>
+        <div class="filtros-grid">
+          <div class="filter-group">
+            <label>Período</label>
+            <select [(ngModel)]="filtros.periodo">
+              <option [value]="null">Todos los períodos</option>
+              <option value="2024-Q1">2024 - Q1</option>
+              <option value="2024-Q2">2024 - Q2</option>
+              <option value="2024-Q3">2024 - Q3</option>
+              <option value="2024-Q4">2024 - Q4</option>
+              <option value="Anual 2024">Anual 2024</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label>Área</label>
+            <select [(ngModel)]="filtros.area">
+              <option [value]="null">Todas las áreas</option>
+              <option value="Ventas">Ventas</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operaciones">Operaciones</option>
+              <option value="TI">Tecnología</option>
+              <option value="RRHH">Recursos Humanos</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Tipo de Reporte</label>
+            <select [(ngModel)]="filtros.tipoReporte">
+              <option value="Global">Global</option>
+              <option value="Por Área">Por Área</option>
+              <option value="Individual">Individual</option>
+              <option value="Comparativo">Comparativo</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="filtros-actions">
+          <button class="btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+          <button class="btn-primary" (click)="aplicarFiltros()">Aplicar Filtros</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas Generales (Cards) -->
+    <div class="stats-overview">
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+        </div>
+        <div class="stat-details">
+          <p class="stat-label">Promedio General</p>
+          <h2 class="stat-value">{{ estadisticas.promedio_general.toFixed(1) }}</h2>
+          <p class="stat-sublabel">de 5.0</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="stat-details">
+          <p class="stat-label">Evaluaciones Completas</p>
+          <h2 class="stat-value">{{ estadisticas.evaluaciones_completas }}</h2>
+          <p class="stat-sublabel">{{ estadisticas.evaluaciones_pendientes }} pendientes</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon purple">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </div>
+        <div class="stat-details">
+          <p class="stat-label">Tasa de Completitud</p>
+          <h2 class="stat-value">{{ estadisticas.tasa_completitud.toFixed(0) }}%</h2>
+          <p class="stat-sublabel">de {{ estadisticas.total_colaboradores }} colaboradores</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon orange">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div class="stat-details">
+          <p class="stat-label">Top Performers</p>
+          <h2 class="stat-value">{{ estadisticas.top_performers }}</h2>
+          <p class="stat-sublabel">Promedio ≥ 4.5</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos (Dos Columnas) -->
+    <div class="two-columns">
+      <div class="section-card">
+        <h2>🎯 Competencias Organizacionales</h2>
+        <p class="section-subtitle">Promedio de evaluación por competencia clave</p>
+        <div class="chart-container" *ngIf="competencias.length > 0">
+          <canvas #competenciasChart></canvas>
+        </div>
+        <div class="empty-state" *ngIf="competencias.length === 0">
+          <p>No hay datos de competencias disponibles</p>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h2>📊 Distribución de Calificaciones</h2>
+        <p class="section-subtitle">Cantidad de colaboradores por rango de puntuación</p>
+        <div class="chart-container" *ngIf="Object.keys(distribucion).length > 0">
+          <canvas #distribucionChart></canvas>
+        </div>
+        <div class="empty-state" *ngIf="Object.keys(distribucion).length === 0">
+          <p>No hay datos de distribución disponibles</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Performers (Tabla) -->
+    <div class="section-card" *ngIf="topPerformers.length > 0">
+      <h2>🌟 Top Performers</h2>
+      <p class="section-subtitle">Colaboradores con mejor desempeño</p>
+      <div class="table-responsive">
+        <table class="performers-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Colaborador</th>
+              <th>Área</th>
+              <th>Puesto</th>
+              <th>Promedio</th>
+              <th>Evaluaciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let performer of topPerformers; let i = index">
+              <td class="rank">{{ i + 1 }}</td>
+              <td class="name">{{ performer.nombre }} {{ performer.apellido }}</td>
+              <td>{{ performer.area || '-' }}</td>
+              <td>{{ performer.puesto || '-' }}</td>
+              <td class="score">
+                <span class="badge-score" [class.excellent]="performer.promedio >= 4.5">
+                  {{ performer.promedio.toFixed(2) }}
+                </span>
+              </td>
+              <td>{{ performer.evaluaciones_completas }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Ranking de Áreas -->
+    <div class="section-card" *ngIf="areasRanking.length > 0">
+      <h2>🏢 Ranking de Áreas</h2>
+      <p class="section-subtitle">Desempeño promedio por área organizacional</p>
+      <div class="areas-grid">
+        <div class="area-card" *ngFor="let area of areasRanking; let i = index">
+          <div class="area-header">
+            <span class="area-rank">#{{ i + 1 }}</span>
+            <h3>{{ area.area }}</h3>
+          </div>
+          <div class="area-stats">
+            <div class="area-stat">
+              <span class="label">Promedio</span>
+              <span class="value">{{ area.promedio.toFixed(2) }}</span>
+            </div>
+            <div class="area-stat">
+              <span class="label">Colaboradores</span>
+              <span class="value">{{ area.total_colaboradores }}</span>
+            </div>
+            <div class="area-stat">
+              <span class="label">Evaluaciones</span>
+              <span class="value">{{ area.evaluaciones_completas }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Análisis de Fortalezas y Mejoras -->
+    <div class="two-columns">
+      <div class="section-card insights-card fortalezas">
+        <h2>✅ Fortalezas Destacadas</h2>
+        <ul class="insights-list" *ngIf="competencias.length > 0">
+          <li *ngFor="let comp of competencias.slice(0, 3)">
+            <strong>{{ comp.competencia }}</strong>
+            <span class="score-badge">{{ comp.promedio.toFixed(1) }}</span>
+          </li>
+        </ul>
+        <p *ngIf="competencias.length === 0" class="empty-message">
+          No hay datos suficientes para mostrar fortalezas
+        </p>
+      </div>
+
+      <div class="section-card insights-card mejoras">
+        <h2>📈 Oportunidades de Mejora</h2>
+        <ul class="insights-list" *ngIf="competencias.length > 0">
+          <li *ngFor="let comp of competencias.slice(-3).reverse()">
+            <strong>{{ comp.competencia }}</strong>
+            <span class="score-badge warning">{{ comp.promedio.toFixed(1) }}</span>
+          </li>
+        </ul>
+        <p *ngIf="competencias.length === 0" class="empty-message">
+          No hay datos suficientes para identificar mejoras
+        </p>
+      </div>
+    </div>
+
+    <!-- Opciones de Exportación -->
+    <div class="export-section">
+      <div class="export-card">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <div class="export-content">
+          <h3>Reporte PDF Ejecutivo</h3>
+          <p>Documento completo con gráficos y análisis detallado</p>
+        </div>
+        <button class="btn-primary" (click)="exportarPDF()">
+          Descargar PDF
+        </button>
+      </div>
+
+      <div class="export-card">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <div class="export-content">
+          <h3>Base de Datos Excel</h3>
+          <p>Datos completos de evaluaciones para análisis personalizado</p>
+        </div>
+        <button class="btn-secondary" (click)="exportarExcel()">
+          Descargar Excel
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

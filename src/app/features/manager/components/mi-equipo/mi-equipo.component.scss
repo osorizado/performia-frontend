@@ -1,0 +1,478 @@
+@import '../../../../../styles/variables';
+@import '../../../../../styles/mixins';
+
+.mi-equipo-container {
+  min-height: 100vh;
+  background-color: $neutral-50;
+  padding: $spacing-xl;
+
+  @include respond-to(md) {
+    padding: $spacing-2xl;
+  }
+}
+
+// ========================================
+// HEADER
+// ========================================
+.equipo-header {
+  background: $neutral-900;
+  border-radius: $border-radius-xl;
+  padding: $spacing-2xl;
+  margin-bottom: $spacing-2xl;
+  box-shadow: $shadow-lg;
+  color: $white;
+
+  @include respond-to(md) {
+    padding: $spacing-3xl;
+  }
+
+  .header-content {
+    h1 {
+      font-size: $font-size-h2;
+      font-weight: $font-weight-bold;
+      margin: 0 0 $spacing-sm 0;
+      color: $white;
+
+      @include respond-to(md) {
+        font-size: $font-size-h1;
+      }
+    }
+
+    .subtitle {
+      font-size: $font-size-large;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: $font-weight-regular;
+    }
+  }
+}
+
+// ========================================
+// ESTADÍSTICAS (3 CARDS)
+// ========================================
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-lg;
+  margin-bottom: $spacing-2xl;
+}
+
+.stat-card {
+  background: $white;
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  box-shadow: $shadow-md;
+  border: 1px solid $neutral-200;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-xl;
+  }
+}
+
+.stat-label {
+  font-size: $font-size-small;
+  color: $neutral-600;
+  font-weight: $font-weight-medium;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: $font-weight-extrabold;
+  color: $neutral-900;
+  font-family: $font-family-numbers;
+}
+
+// ========================================
+// FILTERS BAR
+// ========================================
+.filters-bar {
+  background: $white;
+  border: 1px solid $neutral-200;
+  border-radius: $border-radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+  box-shadow: $shadow-sm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+  margin-right: $spacing-lg;
+
+  svg {
+    position: absolute;
+    left: $spacing-md;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: $neutral-400;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: $spacing-sm $spacing-md $spacing-sm calc($spacing-md + 28px);
+    border: 2px solid $neutral-300;
+    border-radius: $border-radius-md;
+    font-size: $font-size-base;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-blue;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+
+    &::placeholder {
+      color: $neutral-400;
+    }
+  }
+}
+
+.filter-select {
+  padding: $spacing-sm $spacing-md;
+  border: 2px solid $neutral-300;
+  border-radius: $border-radius-md;
+  font-size: $font-size-base;
+  color: $neutral-700;
+  background: $white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-blue;
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+  }
+}
+
+// ========================================
+// LOADING STATE
+// ========================================
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: $spacing-lg;
+
+  p {
+    color: $neutral-600;
+    font-size: $font-size-large;
+  }
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid $neutral-200;
+  border-top-color: $primary-blue;
+  border-radius: $border-radius-full;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ========================================
+// COLABORADORES GRID (SEGÚN MOCKUP)
+// ========================================
+.colaboradores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: $spacing-lg;
+}
+
+.colaborador-card {
+  background: $white;
+  border: 1px solid $neutral-200;
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  box-shadow: $shadow-md;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-xl;
+    border-color: $primary-blue-lighter;
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-lg;
+  border-bottom: 1px solid $neutral-200;
+}
+
+.colaborador-avatar {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, $primary-blue 0%, $primary-blue-light 100%);
+  border-radius: $border-radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: $font-weight-bold;
+  color: $white;
+  font-size: $font-size-large;
+  flex-shrink: 0;
+}
+
+.colaborador-info {
+  flex: 1;
+
+  h3 {
+    font-size: $font-size-large;
+    font-weight: $font-weight-bold;
+    color: $neutral-900;
+    margin: 0 0 $spacing-xs 0;
+  }
+
+  .cargo {
+    font-size: $font-size-base;
+    color: $neutral-600;
+    margin: 0 0 $spacing-xs 0;
+  }
+
+  .area {
+    font-size: $font-size-small;
+    color: $neutral-500;
+    margin: 0;
+  }
+}
+
+.card-body {
+  margin-bottom: $spacing-lg;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  .stat-label {
+    font-size: $font-size-xsmall;
+    color: $neutral-500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: $font-weight-semibold;
+  }
+
+  .stat-value {
+    font-size: $font-size-h5;
+    font-weight: $font-weight-bold;
+    color: $neutral-900;
+    font-family: $font-family-numbers;
+  }
+}
+
+.status-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.badge {
+  display: inline-flex;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xsmall;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.badge-success {
+    background: $success-green-lightest;
+    color: $success-green;
+  }
+
+  &.badge-warning {
+    background: $warning-yellow-lightest;
+    color: $warning-yellow;
+  }
+
+  &.badge-danger {
+    background: $danger-red-lightest;
+    color: $danger-red;
+  }
+
+  &.badge-info {
+    background: $primary-blue-lightest;
+    color: $primary-blue;
+  }
+}
+
+.card-footer {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.btn-secondary,
+.btn-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.btn-secondary {
+  background: $white;
+  color: $neutral-700;
+  border: 2px solid $neutral-300;
+
+  &:hover {
+    background: $neutral-50;
+    border-color: $neutral-400;
+  }
+}
+
+.btn-primary {
+  background: $primary-blue;
+  color: $white;
+
+  &:hover {
+    background: $primary-blue-light;
+    box-shadow: $shadow-md;
+  }
+}
+
+// ========================================
+// EMPTY STATE
+// ========================================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-4xl $spacing-xl;
+  text-align: center;
+  background: $white;
+  border-radius: $border-radius-lg;
+  border: 2px dashed $neutral-300;
+
+  svg {
+    width: 80px;
+    height: 80px;
+    color: $neutral-400;
+    margin-bottom: $spacing-lg;
+  }
+
+  h2 {
+    font-size: $font-size-h4;
+    color: $neutral-700;
+    margin: 0 0 $spacing-sm 0;
+  }
+
+  p {
+    font-size: $font-size-base;
+    color: $neutral-500;
+    margin: 0;
+  }
+}
+
+// ========================================
+// RESPONSIVE
+// ========================================
+@media (max-width: $breakpoint-lg) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .colaboradores-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .mi-equipo-container {
+    padding: $spacing-lg;
+  }
+
+  .equipo-header {
+    padding: $spacing-lg;
+
+    .header-content h1 {
+      font-size: $font-size-h3;
+    }
+
+    .header-content .subtitle {
+      font-size: $font-size-base;
+    }
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .colaboradores-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+    gap: $spacing-md;
+    align-items: stretch;
+  }
+
+  .search-box {
+    max-width: 100%;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .mi-equipo-container {
+    padding: $spacing-md;
+  }
+
+  .equipo-header {
+    padding: $spacing-md;
+  }
+
+  .stat-card {
+    padding: $spacing-md;
+  }
+
+  .colaborador-card {
+    padding: $spacing-md;
+  }
+
+  .card-footer {
+    flex-direction: column;
+  }
+}

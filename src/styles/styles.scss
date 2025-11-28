@@ -1,0 +1,444 @@
+// =============================================================================
+// PERFORMIA - ESTILOS GLOBALES
+// =============================================================================
+
+@import 'variables';
+@import 'mixins';
+
+// =============================================================================
+// RESET Y BASE
+// =============================================================================
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: $font-family-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-regular;
+  line-height: $line-height-normal;
+  color: $neutral-900;
+  background-color: $neutral-50;
+  overflow-x: hidden;
+}
+
+// =============================================================================
+// TIPOGRAFÍA
+// =============================================================================
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  color: $neutral-900;
+  margin-bottom: $spacing-md;
+}
+
+h1 { font-size: $font-size-h1; }
+h2 { font-size: $font-size-h2; }
+h3 { font-size: $font-size-h3; }
+h4 { font-size: $font-size-h4; }
+h5 { font-size: $font-size-h5; }
+h6 { font-size: $font-size-h6; }
+
+p {
+  margin-bottom: $spacing-md;
+  color: $neutral-700;
+}
+
+a {
+  color: $primary-blue;
+  text-decoration: none;
+  transition: color $transition-base;
+  
+  &:hover {
+    color: $primary-blue-light;
+  }
+}
+
+// =============================================================================
+// CLASES UTILITARIAS
+// =============================================================================
+
+// Contenedor
+.container {
+  @include container;
+}
+
+// Espaciado
+.mt-xs { margin-top: $spacing-xs; }
+.mt-sm { margin-top: $spacing-sm; }
+.mt-md { margin-top: $spacing-md; }
+.mt-lg { margin-top: $spacing-lg; }
+.mt-xl { margin-top: $spacing-xl; }
+
+.mb-xs { margin-bottom: $spacing-xs; }
+.mb-sm { margin-bottom: $spacing-sm; }
+.mb-md { margin-bottom: $spacing-md; }
+.mb-lg { margin-bottom: $spacing-lg; }
+.mb-xl { margin-bottom: $spacing-xl; }
+
+.p-xs { padding: $spacing-xs; }
+.p-sm { padding: $spacing-sm; }
+.p-md { padding: $spacing-md; }
+.p-lg { padding: $spacing-lg; }
+.p-xl { padding: $spacing-xl; }
+
+// Texto
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.text-xs { font-size: $font-size-xsmall; }
+.text-sm { font-size: $font-size-small; }
+.text-base { font-size: $font-size-base; }
+.text-lg { font-size: $font-size-large; }
+
+.font-light { font-weight: $font-weight-light; }
+.font-normal { font-weight: $font-weight-regular; }
+.font-medium { font-weight: $font-weight-medium; }
+.font-semibold { font-weight: $font-weight-semibold; }
+.font-bold { font-weight: $font-weight-bold; }
+
+// Colores de texto
+.text-primary { color: $primary-blue; }
+.text-success { color: $success-green; }
+.text-warning { color: $warning-yellow; }
+.text-danger { color: $danger-red; }
+.text-muted { color: $neutral-500; }
+
+// Fondos
+.bg-white { background-color: $white; }
+.bg-gray-50 { background-color: $neutral-50; }
+.bg-gray-100 { background-color: $neutral-100; }
+.bg-primary { background-color: $primary-blue; }
+.bg-success { background-color: $success-green-lightest; }
+.bg-warning { background-color: $warning-yellow-lightest; }
+.bg-danger { background-color: $danger-red-lightest; }
+
+// Display
+.d-none { display: none; }
+.d-block { display: block; }
+.d-inline-block { display: inline-block; }
+.d-flex { display: flex; }
+.d-inline-flex { display: inline-flex; }
+
+// Flexbox
+.flex-row { flex-direction: row; }
+.flex-column { flex-direction: column; }
+.flex-center { @include flex-center; }
+.flex-between { @include flex-between; }
+.align-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-1 { flex: 1; }
+
+// Gap
+.gap-xs { gap: $spacing-xs; }
+.gap-sm { gap: $spacing-sm; }
+.gap-md { gap: $spacing-md; }
+.gap-lg { gap: $spacing-lg; }
+
+// Bordes
+.rounded-sm { border-radius: $border-radius-sm; }
+.rounded-md { border-radius: $border-radius-md; }
+.rounded-lg { border-radius: $border-radius-lg; }
+.rounded-full { border-radius: $border-radius-full; }
+
+// Sombras
+.shadow-sm { box-shadow: $shadow-sm; }
+.shadow-md { box-shadow: $shadow-md; }
+.shadow-lg { box-shadow: $shadow-lg; }
+
+// Width/Height
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+// Cursor
+.cursor-pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+// Truncate
+.truncate { @include truncate; }
+
+// =============================================================================
+// COMPONENTES GLOBALES
+// =============================================================================
+
+// Botones
+.btn {
+  @include btn-base;
+}
+
+.btn-primary {
+  @include btn-primary;
+}
+
+.btn-secondary {
+  @include btn-secondary;
+}
+
+.btn-success {
+  @include btn-success;
+}
+
+.btn-danger {
+  @include btn-danger;
+}
+
+.btn-sm {
+  padding: $spacing-xs $spacing-md;
+  font-size: $font-size-small;
+}
+
+.btn-lg {
+  padding: $spacing-md $spacing-xl;
+  font-size: $font-size-large;
+}
+
+// Cards
+.card {
+  @include card;
+}
+
+.card-header {
+  @include card-header;
+  
+  h3, h4 {
+    margin: 0;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.card-body {
+  padding: $spacing-lg;
+}
+
+.card-footer {
+  padding-top: $spacing-md;
+  border-top: 1px solid $neutral-200;
+  margin-top: $spacing-md;
+}
+
+// Inputs
+.form-group {
+  margin-bottom: $spacing-md;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: $spacing-xs;
+  font-weight: $font-weight-medium;
+  color: $neutral-700;
+  font-size: $font-size-small;
+}
+
+.form-control {
+  @include input-base;
+  
+  &.is-invalid {
+    @include input-error;
+  }
+}
+
+.form-error {
+  display: block;
+  margin-top: $spacing-xs;
+  color: $danger-red;
+  font-size: $font-size-small;
+}
+
+.form-help {
+  display: block;
+  margin-top: $spacing-xs;
+  color: $neutral-500;
+  font-size: $font-size-small;
+}
+
+// Checkbox y Radio
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+  
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+  }
+  
+  label {
+    margin: 0;
+    cursor: pointer;
+  }
+}
+
+// Select
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.5rem;
+  padding-right: 2.5rem;
+}
+
+// Badges
+.badge {
+  @include badge-base;
+}
+
+.badge-success {
+  @include badge-success;
+}
+
+.badge-warning {
+  @include badge-warning;
+}
+
+.badge-danger {
+  @include badge-danger;
+}
+
+.badge-info {
+  @include badge-info;
+}
+
+// Tablas
+.table {
+  @include table;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  @include custom-scrollbar;
+}
+
+// Alertas
+.alert {
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  margin-bottom: $spacing-md;
+  border-left: 4px solid;
+  
+  &.alert-success {
+    background-color: $success-green-lightest;
+    border-color: $success-green;
+    color: $success-green;
+  }
+  
+  &.alert-warning {
+    background-color: $warning-yellow-lightest;
+    border-color: $warning-yellow;
+    color: $warning-yellow;
+  }
+  
+  &.alert-danger {
+    background-color: $danger-red-lightest;
+    border-color: $danger-red;
+    color: $danger-red;
+  }
+  
+  &.alert-info {
+    background-color: $primary-blue-lightest;
+    border-color: $primary-blue;
+    color: $primary-blue;
+  }
+}
+
+// Spinner de carga
+.spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid $neutral-200;
+  border-top-color: $primary-blue;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Loading overlay
+.loading-overlay {
+  @include modal-overlay;
+  background-color: rgba(255, 255, 255, 0.9);
+  
+  .spinner {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+// Modal
+.modal-overlay {
+  @include modal-overlay;
+}
+
+.modal-content {
+  @include modal-content;
+}
+
+// Scrollbar personalizado
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $neutral-100;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $neutral-400;
+  border-radius: $border-radius-full;
+  
+  &:hover {
+    background: $neutral-500;
+  }
+}
+
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@include respond-to(sm) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@include respond-to(md) {
+  html {
+    font-size: 16px;
+  }
+}
+
+// =============================================================================
+// CLASES DE UTILIDAD RESPONSIVE
+// =============================================================================
+
+@include respond-to(md) {
+  .d-md-none { display: none; }
+  .d-md-block { display: block; }
+  .d-md-flex { display: flex; }
+}
+
+@include respond-to(lg) {
+  .d-lg-none { display: none; }
+  .d-lg-block { display: block; }
+  .d-lg-flex { display: flex; }
+}

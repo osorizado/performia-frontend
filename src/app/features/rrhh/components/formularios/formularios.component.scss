@@ -1,0 +1,695 @@
+@import 'src/styles/variables';
+@import 'src/styles/mixins';
+
+// ============================================================================
+// CONTENEDOR PRINCIPAL
+// ============================================================================
+.formularios-container {
+  min-height: 100vh;
+  background-color: $neutral-50;
+  padding: $spacing-xl;
+  position: relative;
+}
+
+.loading-state {
+  @include flex-center;
+  @include flex-column;
+  min-height: 60vh;
+  gap: $spacing-lg;
+
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid $primary-blue-lightest;
+    border-top-color: $primary-blue;
+    border-radius: $border-radius-full;
+    animation: spin 0.8s linear infinite;
+  }
+
+  p {
+    color: $neutral-600;
+    font-size: $font-size-base;
+  }
+}
+
+.formularios-content {
+  position: relative;
+  z-index: 10;
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+.formularios-header {
+  background: $neutral-900;
+  border-radius: $border-radius-xl;
+  padding: $spacing-2xl;
+  margin-bottom: $spacing-2xl;
+  box-shadow: $shadow-lg;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: $white;
+
+  .header-content {
+    h1 {
+      font-size: $font-size-h2;
+      font-weight: $font-weight-bold;
+      margin: 0 0 $spacing-sm 0;
+      color: $white;
+    }
+
+    .subtitle {
+      font-size: $font-size-large;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: $spacing-md;
+  }
+}
+
+// ============================================================================
+// LISTA DE FORMULARIOS
+// ============================================================================
+.formularios-lista {
+  .section-header {
+    margin-bottom: $spacing-xl;
+
+    h2 {
+      font-size: $font-size-h3;
+      font-weight: $font-weight-bold;
+      color: $neutral-900;
+      margin: 0 0 $spacing-xs 0;
+    }
+
+    .section-subtitle {
+      font-size: $font-size-base;
+      color: $neutral-600;
+      margin: 0;
+    }
+  }
+}
+
+.formularios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: $spacing-lg;
+}
+
+.formulario-card {
+  background: $white;
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  box-shadow: $shadow-md;
+  transition: all 0.3s ease;
+  border: 1px solid $neutral-200;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-xl;
+    border-color: $primary-blue-lightest;
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-lg;
+  border-bottom: 1px solid $neutral-200;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  background: $primary-blue-lightest;
+  border-radius: $border-radius-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: $primary-blue;
+  }
+}
+
+.card-title {
+  flex: 1;
+
+  h3 {
+    font-size: $font-size-large;
+    font-weight: $font-weight-bold;
+    color: $neutral-900;
+    margin: 0 0 $spacing-xs 0;
+    line-height: 1.3;
+  }
+}
+
+// ✅ BADGES DE ESTADO ACTUALIZADOS
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: $border-radius-md;
+  font-size: $font-size-small;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  // Estado Activo
+  &.badge-activo {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  // Estado Borrador
+  &.badge-borrador {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+  
+  // Estado Archivado
+  &.badge-archivado {
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
+  }
+  
+  // Estados heredados (compatibilidad)
+  &.badge-activo,
+  &-success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  &.badge-inactivo,
+  &-warning {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  &-secondary {
+    background-color: #e2e3e5;
+    color: #383d41;
+  }
+}
+
+.card-body {
+  margin-bottom: $spacing-lg;
+
+  .descripcion {
+    font-size: $font-size-base;
+    color: $neutral-600;
+    margin-bottom: $spacing-md;
+    line-height: 1.5;
+  }
+}
+
+.rol-aplicable-badge {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: $primary-blue-lightest;
+  border-radius: $border-radius-md;
+  margin-bottom: $spacing-md;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    color: $primary-blue;
+    flex-shrink: 0;
+  }
+
+  .rol-badge-text {
+    font-size: $font-size-small;
+    color: $neutral-700;
+
+    strong {
+      color: $primary-blue;
+      font-weight: $font-weight-semibold;
+    }
+  }
+}
+
+.card-stats {
+  display: flex;
+  gap: $spacing-lg;
+  padding: $spacing-md;
+  background: $neutral-50;
+  border-radius: $border-radius-md;
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    .stat-label {
+      font-size: $font-size-small;
+      color: $neutral-600;
+      font-weight: $font-weight-medium;
+    }
+
+    .stat-value {
+      font-size: $font-size-base;
+      color: $neutral-900;
+      font-weight: $font-weight-bold;
+    }
+  }
+}
+
+.card-footer {
+  display: flex;
+  gap: $spacing-sm;
+  padding-top: $spacing-lg;
+  border-top: 1px solid $neutral-200;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: $neutral-100;
+  border-radius: $border-radius-md;
+  color: $neutral-700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: $primary-blue;
+    color: $white;
+    transform: scale(1.1);
+  }
+
+  &.danger:hover {
+    background: #dc3545;
+    color: $white;
+  }
+}
+
+// ============================================================================
+// EMPTY STATE
+// ============================================================================
+.empty-state {
+  @include flex-center;
+  @include flex-column;
+  padding: $spacing-3xl;
+  text-align: center;
+  background: $white;
+  border-radius: $border-radius-xl;
+  box-shadow: $shadow-md;
+
+  svg {
+    width: 64px;
+    height: 64px;
+    color: $neutral-400;
+    margin-bottom: $spacing-lg;
+  }
+
+  h2 {
+    font-size: $font-size-h3;
+    color: $neutral-900;
+    margin-bottom: $spacing-sm;
+  }
+
+  p {
+    font-size: $font-size-base;
+    color: $neutral-600;
+    margin-bottom: $spacing-xl;
+  }
+}
+
+// ============================================================================
+// EDITOR DE FORMULARIOS
+// ============================================================================
+.formulario-editor {
+  background: $white;
+  border-radius: $border-radius-xl;
+  padding: $spacing-2xl;
+  box-shadow: $shadow-lg;
+}
+
+.editor-header {
+  margin-bottom: $spacing-2xl;
+  padding-bottom: $spacing-lg;
+  border-bottom: 2px solid $neutral-200;
+
+  h2 {
+    font-size: $font-size-h2;
+    font-weight: $font-weight-bold;
+    color: $neutral-900;
+    margin: 0 0 $spacing-sm 0;
+  }
+
+  .section-subtitle {
+    font-size: $font-size-base;
+    color: $neutral-600;
+    margin: 0;
+  }
+}
+
+.editor-section {
+  margin-bottom: $spacing-2xl;
+  padding: $spacing-xl;
+  background: $neutral-50;
+  border-radius: $border-radius-lg;
+  border: 1px solid $neutral-200;
+
+  h3 {
+    font-size: $font-size-h4;
+    font-weight: $font-weight-bold;
+    color: $neutral-900;
+    margin: 0 0 $spacing-lg 0;
+  }
+
+  .section-subtitle {
+    font-size: $font-size-base;
+    color: $neutral-600;
+    margin-bottom: $spacing-lg;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+
+    h3 {
+      margin: 0;
+    }
+  }
+}
+
+.form-group {
+  margin-bottom: $spacing-lg;
+
+  label {
+    display: block;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $neutral-900;
+    margin-bottom: $spacing-sm;
+
+    &.label-with-icon {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      svg {
+        width: 20px;
+        height: 20px;
+        color: $primary-blue;
+      }
+    }
+  }
+
+  input[type="text"],
+  textarea,
+  select {
+    width: 100%;
+    padding: $spacing-md;
+    border: 1px solid $neutral-300;
+    border-radius: $border-radius-md;
+    font-size: $font-size-base;
+    color: $neutral-900;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-blue;
+      box-shadow: 0 0 0 3px rgba($primary-blue, 0.1);
+    }
+
+    &::placeholder {
+      color: $neutral-500;
+    }
+  }
+
+  .help-text {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    margin-top: $spacing-sm;
+    font-size: $font-size-small;
+    color: $neutral-600;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: $primary-blue;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: $spacing-lg;
+}
+
+.rol-aplicable-selector {
+  .select-rol {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right $spacing-md center;
+    background-size: 20px;
+    padding-right: $spacing-2xl;
+  }
+}
+
+// ============================================================================
+// PREGUNTAS
+// ============================================================================
+.preguntas-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.pregunta-item {
+  background: $white;
+  border: 1px solid $neutral-300;
+  border-radius: $border-radius-lg;
+  padding: $spacing-lg;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $primary-blue-lightest;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.pregunta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 1px solid $neutral-200;
+}
+
+.pregunta-numero {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $primary-blue;
+}
+
+.btn-remove {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: $neutral-600;
+  cursor: pointer;
+  border-radius: $border-radius-md;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: #fee;
+    color: #dc3545;
+  }
+}
+
+.pregunta-body {
+  .form-group {
+    margin-bottom: $spacing-md;
+  }
+}
+
+.empty-preguntas {
+  @include flex-center;
+  padding: $spacing-2xl;
+  text-align: center;
+  background: $neutral-100;
+  border-radius: $border-radius-md;
+  border: 2px dashed $neutral-300;
+
+  p {
+    color: $neutral-600;
+    margin: 0;
+  }
+}
+
+// ============================================================================
+// RESUMEN
+// ============================================================================
+.resumen-section {
+  background: linear-gradient(135deg, $primary-blue-lightest, lighten($primary-blue-lightest, 5%));
+  border: 2px solid $primary-blue-light;
+}
+
+.resumen-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-lg;
+}
+
+.resumen-item {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  .resumen-label {
+    font-size: $font-size-small;
+    color: $neutral-700;
+    font-weight: $font-weight-medium;
+  }
+
+  .resumen-value {
+    font-size: $font-size-h3;
+    color: $neutral-900;
+    font-weight: $font-weight-bold;
+
+    &.resumen-rol {
+      font-size: $font-size-large;
+      color: $primary-blue;
+    }
+  }
+}
+
+// ============================================================================
+// ACTIONS
+// ============================================================================
+.editor-actions {
+  display: flex;
+  gap: $spacing-md;
+  justify-content: flex-end;
+  padding-top: $spacing-xl;
+  border-top: 2px solid $neutral-200;
+}
+
+// ============================================================================
+// BUTTONS
+// ============================================================================
+.btn-primary,
+.btn-secondary {
+  padding: $spacing-md $spacing-xl;
+  border-radius: $border-radius-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+  border: none;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background: $primary-blue;
+  color: $white;
+
+  &:not(:disabled):hover {
+    background: darken($primary-blue, 5%);
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.btn-secondary {
+  background: $neutral-200;
+  color: $neutral-900;
+
+  &:hover {
+    background: $neutral-300;
+  }
+}
+
+.btn-sm {
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-small;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// ============================================================================
+// ANIMATIONS
+// ============================================================================
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.btn-icon {
+  &.success {
+    background: #d4edda;
+    color: #28a745;
+    border: 1px solid #28a745;
+    
+    &:hover {
+      background: #28a745;
+      color: white;
+    }
+  }
+  
+  &.warning {
+    background: #fff3cd;
+    color: #ffc107;
+    border: 1px solid #ffc107;
+    
+    &:hover {
+      background: #ffc107;
+      color: white;
+    }
+  }
+}

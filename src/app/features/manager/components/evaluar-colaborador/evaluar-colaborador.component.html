@@ -1,0 +1,103 @@
+<div class="evaluar-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando información del colaborador...</p>
+  </div>
+
+  <!-- No hay colaborador seleccionado -->
+  <div *ngIf="!loading && !colaborador" class="empty-state">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+    <h2>No hay colaborador seleccionado</h2>
+    <p>Selecciona un colaborador desde la vista de Mi Equipo para evaluarlo.</p>
+    <button class="btn-primary" (click)="cancelar()">Volver a Mi Equipo</button>
+  </div>
+
+  <!-- Vista Principal: Información del Colaborador y Evaluación -->
+  <div *ngIf="!loading && colaborador" class="evaluacion-main">
+    <!-- Header con información del colaborador -->
+    <div class="colaborador-header">
+      <div class="colaborador-avatar-large">
+        <span>{{ colaborador.nombre.charAt(0) }}{{ colaborador.apellido.charAt(0) }}</span>
+      </div>
+      <div class="colaborador-details">
+        <h1>{{ colaborador.nombre }} {{ colaborador.apellido }}</h1>
+        <p class="cargo">{{ colaborador.cargo }}</p>
+      </div>
+    </div>
+
+    <!-- Formulario de Evaluación -->
+    <form [formGroup]="evaluacionForm" class="evaluacion-form">
+      
+      <!-- Secciones de evaluación -->
+      <div *ngFor="let categoria of getCategorias()" class="categoria-section">
+        <h2 class="categoria-titulo">{{ categoria }}</h2>
+        
+        <div *ngFor="let pregunta of getPreguntasPorCategoria(categoria)" class="pregunta-card">
+          <!-- Texto de la pregunta -->
+          <div class="pregunta-text">
+            <p class="pregunta-label">{{ pregunta.texto }}</p>
+          </div>
+
+          <!-- Lado izquierdo: Autoevaluación del Colaborador -->
+          <div class="evaluacion-row">
+            <div class="evaluacion-column autoevaluacion-column">
+              <label class="column-label">Autoevaluación del Colaborador</label>
+              <div class="calificacion-display">
+                <span class="calificacion-value">{{ getAutoevaluacionValue(pregunta.id) || '--' }}</span>
+                <span class="calificacion-max">de 5</span>
+              </div>
+            </div>
+
+            <!-- Lado derecho: Tu Evaluación -->
+            <div class="evaluacion-column manager-column">
+              <label class="column-label">Tu Evaluación</label>
+              <div class="calificacion-buttons">
+                <button
+                  *ngFor="let valor of [1, 2, 3, 4, 5]"
+                  type="button"
+                  class="calificacion-btn"
+                  [class.active]="evaluacionForm.get('pregunta_' + pregunta.id)?.value === valor"
+                  (click)="responderPregunta(pregunta.id, valor)">
+                  {{ valor }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Retroalimentación General -->
+      <div class="retroalimentacion-section">
+        <h2 class="section-titulo">Retroalimentación General</h2>
+        <p class="section-descripcion">Proporciona comentarios constructivos para el colaborador</p>
+        
+        <textarea
+          formControlName="observaciones_generales"
+          class="retroalimentacion-textarea"
+          rows="6"
+          placeholder="Escribe la retroalimentación aquí. Menciona fortalezas, áreas de mejora y recomendaciones específicas..."></textarea>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="cancelar()" [disabled]="guardando">
+          Cancelar
+        </button>
+        <button 
+          type="button" 
+          class="btn-primary btn-submit" 
+          (click)="enviarEvaluacion()" 
+          [disabled]="guardando || !evaluacionForm.valid">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span *ngIf="!guardando">Enviar Evaluación</span>
+          <span *ngIf="guardando">Enviando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

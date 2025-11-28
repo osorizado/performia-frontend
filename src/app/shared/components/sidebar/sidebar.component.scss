@@ -1,0 +1,136 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.sidebar {
+  position: fixed;
+  top: $header-height;
+  left: 0;
+  bottom: 0;
+  width: $sidebar-width;
+  background-color: $white;
+  border-right: 1px solid $neutral-200;
+  transition: width $transition-base;
+  z-index: $z-index-fixed;
+  overflow-y: auto;
+  @include custom-scrollbar;
+
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+
+    .nav-label {
+      display: none;
+    }
+
+    .toggle-btn {
+      justify-content: center;
+      padding: $spacing-md;
+    }
+  }
+}
+
+// Toggle button
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  padding: $spacing-md $spacing-lg;
+  border: none;
+  background-color: transparent;
+  color: $neutral-600;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:hover {
+    color: $primary-blue;
+    background-color: $neutral-50;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// Navigation menu
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-md 0;
+  gap: $spacing-xs;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  width: 100%;
+  padding: $spacing-md $spacing-lg;
+  border: none;
+  background-color: transparent;
+  color: $neutral-700;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  text-align: left;
+  cursor: pointer;
+  transition: all $transition-base;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: $primary-blue;
+    opacity: 0;
+    transition: opacity $transition-base;
+  }
+
+  &:hover {
+    background-color: $neutral-50;
+    color: $primary-blue;
+  }
+
+  &.active {
+    background-color: $primary-blue-lightest;
+    color: $primary-blue;
+    font-weight: $font-weight-semibold;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.nav-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Responsive
+@media (max-width: $breakpoint-md) {
+  .sidebar {
+    transform: translateX(-100%);
+    
+    &.open {
+      transform: translateX(0);
+    }
+  }
+}

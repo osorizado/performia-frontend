@@ -1,0 +1,156 @@
+<div class="autoevaluacion-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando evaluación...</p>
+  </div>
+
+  <!-- No hay evaluaciones pendientes -->
+  <div *ngIf="!loading && !evaluacionPendiente" class="empty-state">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <h2>No hay evaluaciones pendientes</h2>
+    <p>En este momento no tienes evaluaciones pendientes por completar.</p>
+    <button class="btn-primary" (click)="cancelar()">Volver al Dashboard</button>
+  </div>
+
+  <!-- Vista de inicio de evaluación -->
+  <div *ngIf="!loading && evaluacionPendiente && !evaluacionIniciada" class="inicio-evaluacion">
+    <div class="evaluacion-card">
+      <div class="card-header">
+        <div class="header-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <h1>Autoevaluación</h1>
+        <p class="subtitle">{{ evaluacionPendiente.formulario.titulo }}</p>
+      </div>
+
+      <div class="card-body">
+        <div class="info-section">
+          <h3>Información de la Evaluación</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Periodo:</span>
+              <span class="value">{{ evaluacionPendiente.tipo }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Fecha límite:</span>
+              <span class="value">{{ evaluacionPendiente.fecha_limite | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Total de preguntas:</span>
+              <span class="value">{{ preguntas.length }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="descripcion-section">
+          <h3>Descripción</h3>
+          <p>{{ evaluacionPendiente.formulario.descripcion }}</p>
+        </div>
+
+        <div class="instrucciones-section">
+          <h3>Instrucciones</h3>
+          <ul>
+            <li>Lee cuidadosamente cada pregunta antes de responder</li>
+            <li>Califica del 1 al 5, donde 1 es "Nunca" y 5 es "Siempre"</li>
+            <li>Puedes agregar comentarios adicionales en cada pregunta</li>
+            <li>Guarda tu progreso regularmente</li>
+            <li>Una vez enviada, no podrás modificar tus respuestas</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button class="btn-secondary" (click)="cancelar()">Cancelar</button>
+        <button class="btn-primary" (click)="iniciarEvaluacion()" [disabled]="guardando">
+          <span *ngIf="!guardando">Iniciar Evaluación</span>
+          <span *ngIf="guardando" class="loading-spinner"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario de evaluación -->
+  <div *ngIf="!loading && evaluacionIniciada" class="evaluacion-form-container">
+    <!-- Header con progreso -->
+    <div class="evaluacion-header">
+      <div class="header-content">
+        <h1>Autoevaluación - {{ evaluacionPendiente?.tipo }}</h1>
+        <div class="progress-info">
+          <span class="progress-text">Progreso: {{ progresoActual }}%</span>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="progresoActual"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="evaluacionForm" class="evaluacion-form">
+      <div class="preguntas-container">
+        <div *ngFor="let categoria of getCategorias()" class="categoria-section">
+          <h2 class="categoria-titulo">{{ categoria }}</h2>
+          
+          <div *ngFor="let pregunta of getPreguntasPorCategoria(categoria); let i = index" class="pregunta-card">
+            <div class="pregunta-header">
+              <span class="pregunta-numero">Pregunta {{ pregunta.id }}</span>
+              <h3 class="pregunta-texto">{{ pregunta.texto }}</h3>
+            </div>
+
+            <!-- Escala de calificación -->
+            <div class="calificacion-container" *ngIf="pregunta.tipo === 'escala'">
+              <div class="calificacion-labels">
+                <span class="label-min">Nunca (1)</span>
+                <span class="label-max">Siempre (5)</span>
+              </div>
+              <div class="calificacion-opciones">
+                <button
+                  *ngFor="let opcion of pregunta.opciones"
+                  type="button"
+                  class="opcion-btn"
+                  [class.active]="evaluacionForm.get('pregunta_' + pregunta.id)?.value === opcion.valor"
+                  (click)="responderPregunta(pregunta.id, opcion.valor)">
+                  {{ opcion.etiqueta }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Comentario adicional -->
+            <div class="comentario-section">
+              <label [for]="'comentario_' + pregunta.id">Comentarios adicionales (opcional)</label>
+              <textarea
+                [id]="'comentario_' + pregunta.id"
+                [formControlName]="'comentario_' + pregunta.id"
+                rows="3"
+                placeholder="Describe tus logros, desafíos o contexto adicional..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones del formulario -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="cancelar()" [disabled]="guardando">
+          Cancelar
+        </button>
+        <button type="button" class="btn-outline" (click)="guardarRespuestas()" [disabled]="guardando || !evaluacionForm.valid">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+          </svg>
+          Guardar Progreso
+        </button>
+        <button type="button" class="btn-primary" (click)="enviarEvaluacion()" [disabled]="guardando || !evaluacionForm.valid">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span *ngIf="!guardando">Enviar Autoevaluación</span>
+          <span *ngIf="guardando">Enviando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

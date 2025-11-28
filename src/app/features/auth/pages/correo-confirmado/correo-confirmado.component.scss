@@ -1,0 +1,140 @@
+@import '../../../../../styles/variables';
+
+.confirmed-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* Header */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  height: 60px;
+  flex-shrink: 0;
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    img {
+      height: 40px;
+    }
+
+    .logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $primary-blue;
+    }
+  }
+
+  .primary-button {
+    padding: 8px 16px;
+    background-color: transparent;
+    color: $primary-blue;
+    border: 2px solid $primary-blue;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $primary-blue-lightest;
+    }
+  }
+}
+
+/* Main Content */
+.confirmed-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.confirmed-box {
+  max-width: 400px;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $primary-blue;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .email-icon {
+    margin-bottom: 1rem;
+    
+    svg {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  .confirmed-text {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .btn-login {
+    display: inline-block;
+    padding: 0.75rem 2.5rem;
+    background-color: $primary-blue;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+
+    &:hover {
+      background-color: $primary-blue-light;
+      box-shadow: 0 4px 8px rgba(30, 58, 138, 0.2);
+    }
+  }
+}
+
+/* Celebration Image */
+.celebration-image {
+  width: 100%;
+  max-width: 600px;
+  border: 3px solid $primary-blue;
+  border-radius: 12px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .confirmed-box {
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .celebration-image {
+    max-width: 90%;
+  }
+}

@@ -1,0 +1,295 @@
+<div class="objetivos-container">
+  <!-- Header -->
+  <div class="objetivos-header">
+    <div class="header-content">
+      <h1>Mis Objetivos</h1>
+      <p class="subtitle">Seguimiento a tus objetivos del periodo actual</p>
+    </div>
+    <!-- Botón deshabilitado: Los colaboradores no pueden crear objetivos -->
+    <!-- <button class="btn-primary" (click)="abrirModalNuevo()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Nuevo Objetivo
+    </button> -->
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando objetivos...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" class="objetivos-content">
+    <!-- Estadísticas -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon icon-total">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Objetivos</span>
+          <span class="stat-value">{{ estadisticas.total }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-success">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Completados</span>
+          <span class="stat-value">{{ estadisticas.completados }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-warning">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">En Curso</span>
+          <span class="stat-value">{{ estadisticas.enCurso }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-info">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Progreso Promedio</span>
+          <span class="stat-value">{{ estadisticas.progresoPromedio }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros y Ordenamiento -->
+    <div class="filters-bar">
+      <div class="filters-group">
+        <div class="filter-item">
+          <label for="filtroEstado">Estado:</label>
+          <select id="filtroEstado" [(ngModel)]="filtroEstado" class="filter-select">
+            <option value="todos">Todos</option>
+            <option value="En Curso">En Curso</option>
+            <option value="Completado">Completado</option>
+            <option value="En Pausa">En Pausa</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label for="filtroPrioridad">Prioridad:</label>
+          <select id="filtroPrioridad" [(ngModel)]="filtroPrioridad" class="filter-select">
+            <option value="todos">Todas</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label for="ordenamiento">Ordenar por:</label>
+          <select id="ordenamiento" [(ngModel)]="ordenamiento" class="filter-select">
+            <option value="fecha_inicio">Fecha Inicio</option>
+            <option value="fecha_fin">Fecha Fin</option>
+            <option value="progreso">Progreso</option>
+            <option value="prioridad">Prioridad</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="results-count">
+        {{ objetivosFiltrados.length }} objetivo(s) encontrado(s)
+      </div>
+    </div>
+
+    <!-- Lista de Objetivos -->
+    <div *ngIf="objetivosFiltrados.length > 0" class="objetivos-list">
+      <div *ngFor="let objetivo of objetivosFiltrados" class="objetivo-card">
+        <div class="objetivo-header">
+          <div class="objetivo-title-section">
+            <h3 class="objetivo-titulo">{{ objetivo.titulo }}</h3>
+            <div class="objetivo-badges">
+              <span class="badge" [ngClass]="getEstadoBadgeClass(objetivo.estado)">
+                {{ objetivo.estado }}
+              </span>
+              <span class="badge-prioridad" [ngClass]="getPrioridadClass(objetivo.prioridad)">
+                {{ objetivo.prioridad }}
+              </span>
+            </div>
+          </div>
+          <div class="objetivo-actions">
+            <!-- Botones deshabilitados: Los colaboradores no pueden editar/eliminar objetivos -->
+            <!-- <button class="btn-icon" (click)="abrirModalEditar(objetivo)" title="Editar">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+            <button class="btn-icon btn-danger" (click)="eliminarObjetivo(objetivo)" title="Eliminar">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button> -->
+          </div>
+        </div>
+
+        <p class="objetivo-descripcion">{{ objetivo.descripcion }}</p>
+
+        <div class="objetivo-info">
+          <div class="info-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>{{ formatDate(objetivo.fecha_inicio) }} - {{ formatDate(objetivo.fecha_fin) }}</span>
+          </div>
+          <div class="info-item" [ngClass]="{'text-danger': getDiasRestantes(objetivo.fecha_fin) < 7}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span *ngIf="getDiasRestantes(objetivo.fecha_fin) > 0">{{ getDiasRestantes(objetivo.fecha_fin) }} días restantes</span>
+            <span *ngIf="getDiasRestantes(objetivo.fecha_fin) <= 0" class="text-danger">¡Vencido!</span>
+          </div>
+        </div>
+
+        <div class="objetivo-progreso">
+          <div class="progreso-header">
+            <span class="progreso-label">Progreso</span>
+            <div class="progreso-controls">
+              <button 
+                class="btn-progreso" 
+                (click)="actualizarProgreso(objetivo, objetivo.progreso - 10)"
+                [disabled]="objetivo.progreso <= 0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                </svg>
+              </button>
+              <span class="progreso-value">{{ objetivo.progreso }}%</span>
+              <button 
+                class="btn-progreso" 
+                (click)="actualizarProgreso(objetivo, objetivo.progreso + 10)"
+                [disabled]="objetivo.progreso >= 100">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              [ngClass]="'progress-' + getProgresoColor(objetivo.progreso)"
+              [style.width.%]="objetivo.progreso">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="objetivosFiltrados.length === 0" class="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <h2>No hay objetivos</h2>
+      <p>No se encontraron objetivos con los filtros seleccionados.</p>
+      <!-- Los colaboradores no pueden crear objetivos -->
+      <!-- <button class="btn-primary" (click)="abrirModalNuevo()">Crear Primer Objetivo</button> -->
+    </div>
+  </div>
+
+  <!-- Modal para Crear/Editar Objetivo -->
+  <div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ modoEdicion ? 'Editar Objetivo' : 'Nuevo Objetivo' }}</h2>
+        <button class="btn-close" (click)="cerrarModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="objetivoForm" (ngSubmit)="guardarObjetivo()" class="modal-body">
+        <div class="form-group">
+          <label for="titulo">Título del Objetivo *</label>
+          <input 
+            type="text" 
+            id="titulo" 
+            formControlName="titulo" 
+            class="form-control"
+            placeholder="Ej: Mejorar productividad del equipo">
+          <span *ngIf="objetivoForm.get('titulo')?.invalid && objetivoForm.get('titulo')?.touched" class="form-error">
+            El título es requerido (mínimo 5 caracteres)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción *</label>
+          <textarea 
+            id="descripcion" 
+            formControlName="descripcion" 
+            class="form-control"
+            rows="4"
+            placeholder="Describe detalladamente el objetivo y las métricas de éxito..."></textarea>
+          <span *ngIf="objetivoForm.get('descripcion')?.invalid && objetivoForm.get('descripcion')?.touched" class="form-error">
+            La descripción es requerida (mínimo 10 caracteres)
+          </span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fecha_inicio">Fecha Inicio *</label>
+            <input 
+              type="date" 
+              id="fecha_inicio" 
+              formControlName="fecha_inicio" 
+              class="form-control">
+            <span *ngIf="objetivoForm.get('fecha_inicio')?.invalid && objetivoForm.get('fecha_inicio')?.touched" class="form-error">
+              La fecha de inicio es requerida
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="fecha_fin">Fecha Fin *</label>
+            <input 
+              type="date" 
+              id="fecha_fin" 
+              formControlName="fecha_fin" 
+              class="form-control">
+            <span *ngIf="objetivoForm.get('fecha_fin')?.invalid && objetivoForm.get('fecha_fin')?.touched" class="form-error">
+              La fecha fin es requerida
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prioridad">Prioridad *</label>
+          <select id="prioridad" formControlName="prioridad" class="form-control">
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()" [disabled]="guardando">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="objetivoForm.invalid || guardando">
+            <span *ngIf="!guardando">{{ modoEdicion ? 'Actualizar' : 'Crear' }} Objetivo</span>
+            <span *ngIf="guardando">Guardando...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

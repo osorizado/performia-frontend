@@ -1,0 +1,42 @@
+<div class="confirm-page">
+  <!-- Header -->
+  <header class="main-header">
+    <div class="logo-container">
+      <img src="assets/logo-performia.png" alt="Performia" />
+      <span class="logo-text">Performia</span>
+    </div>
+    <button class="primary-button" routerLink="/auth/homepage">Ir a Página Principal</button>
+  </header>
+
+  <main class="confirm-main">
+    <!-- Left Side - Image -->
+    <div class="confirm-left">
+      <img src="assets/person-writing.png" alt="Profesional" />
+    </div>
+
+    <!-- Right Side - Content -->
+    <div class="confirm-right">
+      <div class="confirm-box">
+        <h1>Confirme su correo electrónico</h1>
+        
+        <!-- Email Icon -->
+        <div class="email-icon">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#1E3A8A" stroke-width="1.5">
+            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+
+        <p class="confirm-text">
+          Siga el enlace para verificar su dirección de correo electrónico.
+        </p>
+
+        <button class="link-button" (click)="reenviarCorreo()">
+          <span *ngIf="!loading">Volver a enviar</span>
+          <span *ngIf="loading">Enviando...</span>
+        </button>
+
+        <div *ngIf="mensaje" class="success-message">{{ mensaje }}</div>
+      </div>
+    </div>
+  </main>
+</div>

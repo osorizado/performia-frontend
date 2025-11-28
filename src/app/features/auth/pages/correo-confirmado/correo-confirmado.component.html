@@ -1,0 +1,63 @@
+<div class="confirmed-page">
+  <!-- Header -->
+  <header class="main-header">
+    <div class="logo-container">
+      <img src="assets/logo-performia.png" alt="Performia" />
+      <span class="logo-text">Performia</span>
+    </div>
+    <button class="primary-button" routerLink="/auth/homepage">Ir a Página Principal</button>
+  </header>
+
+  <main class="confirmed-main">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="confirmed-box">
+      <h1>Verificando...</h1>
+      <div class="loading-spinner"></div>
+      <p class="confirmed-text">Por favor espera mientras confirmamos tu correo.</p>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="!loading && confirmado" class="confirmed-box">
+      <h1>Correo Confirmado</h1>
+      
+      <!-- Email Icon -->
+      <div class="email-icon success">
+        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+
+      <p class="confirmed-text">
+        ¡Felicitaciones! Tu correo electrónico ha sido confirmado exitosamente.
+      </p>
+
+      <button class="btn-login" routerLink="/auth/login">
+        Ir al Login
+      </button>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!loading && !confirmado && errorMessage" class="confirmed-box error">
+      <h1>Error de Confirmación</h1>
+      
+      <div class="email-icon error">
+        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
+          <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+
+      <p class="confirmed-text error-text">
+        {{ errorMessage }}
+      </p>
+
+      <button class="btn-login" routerLink="/auth/confirmar-correo">
+        Solicitar nuevo enlace
+      </button>
+    </div>
+
+    <!-- Celebration Image -->
+    <div *ngIf="!loading && confirmado" class="celebration-image">
+      <img src="assets/hands-celebration.png" alt="Celebración" />
+    </div>
+  </main>
+</div>

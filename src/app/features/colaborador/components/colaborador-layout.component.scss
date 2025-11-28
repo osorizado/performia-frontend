@@ -1,0 +1,320 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.colaborador-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: $neutral-50;
+}
+
+// =============================================================================
+// SIDEBAR
+// =============================================================================
+
+.sidebar {
+  width: $sidebar-width;
+  background-color: $neutral-900;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transition: width $transition-base;
+  z-index: $z-index-fixed;
+  box-shadow: $shadow-lg;
+
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+  }
+}
+
+// Sidebar Header
+.sidebar-header {
+  padding: $spacing-xl $spacing-lg;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background-color: $primary-blue;
+      border-radius: $border-radius-md;
+      @include flex-center;
+      flex-shrink: 0;
+
+      svg {
+        width: $icon-md;
+        height: $icon-md;
+        color: $white;
+      }
+    }
+
+    .logo-text {
+      flex: 1;
+      overflow: hidden;
+
+      h1 {
+        font-size: $font-size-base;
+        font-weight: $font-weight-bold;
+        color: $white;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      p {
+        font-size: $font-size-small;
+        color: $neutral-400;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+// Sidebar Navigation
+.sidebar-nav {
+  flex: 1;
+  padding: $spacing-lg 0;
+  overflow-y: auto;
+  @include custom-scrollbar;
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-md $spacing-lg;
+    color: $neutral-300;
+    text-decoration: none;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+
+    svg {
+      width: $icon-md;
+      height: $icon-md;
+      flex-shrink: 0;
+    }
+
+    span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: $white;
+    }
+
+    &.active {
+      background-color: rgba(59, 130, 246, 0.1);
+      border-left-color: $primary-blue-light;
+      color: $primary-blue-light;
+    }
+
+    &.collapsed {
+      justify-content: center;
+      padding: $spacing-md;
+    }
+  }
+}
+
+// Sidebar Footer
+.sidebar-footer {
+  padding: $spacing-lg;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: $border-radius-md;
+    margin-bottom: $spacing-md;
+
+    &.collapsed {
+      justify-content: center;
+      padding: $spacing-sm;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background-color: $primary-blue;
+      border-radius: $border-radius-full;
+      @include flex-center;
+      flex-shrink: 0;
+
+      svg {
+        width: $icon-md;
+        height: $icon-md;
+        color: $white;
+      }
+    }
+
+    .user-info {
+      flex: 1;
+      overflow: hidden;
+
+      .user-name {
+        font-size: $font-size-base;
+        font-weight: $font-weight-semibold;
+        color: $white;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-role {
+        font-size: $font-size-small;
+        color: $neutral-400;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .btn-logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: $border-radius-md;
+    color: $neutral-300;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: all $transition-base;
+
+    svg {
+      width: $icon-sm;
+      height: $icon-sm;
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      background-color: $danger-red;
+      border-color: $danger-red;
+      color: $white;
+    }
+
+    &.collapsed {
+      padding: $spacing-sm;
+
+      span {
+        display: none;
+      }
+    }
+  }
+}
+
+// =============================================================================
+// MAIN CONTENT
+// =============================================================================
+
+.main-content {
+  flex: 1;
+  margin-left: $sidebar-width;
+  transition: margin-left $transition-base;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  &.sidebar-collapsed {
+    margin-left: $sidebar-collapsed-width;
+  }
+}
+
+// Topbar
+.topbar {
+  height: $header-height;
+  background-color: $white;
+  border-bottom: 1px solid $neutral-200;
+  padding: 0 $spacing-xl;
+  @include flex-between;
+  position: sticky;
+  top: 0;
+  z-index: $z-index-sticky;
+  box-shadow: $shadow-sm;
+
+  .btn-toggle-sidebar {
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border: none;
+    border-radius: $border-radius-md;
+    @include flex-center;
+    cursor: pointer;
+    color: $neutral-600;
+    transition: all $transition-base;
+
+    svg {
+      width: $icon-md;
+      height: $icon-md;
+    }
+
+    &:hover {
+      background-color: $neutral-100;
+      color: $primary-blue;
+    }
+  }
+}
+
+// Content Wrapper
+.content-wrapper {
+  flex: 1;
+  background-color: $neutral-50;
+}
+
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@media (max-width: $breakpoint-lg) {
+  .sidebar {
+    transform: translateX(-100%);
+    
+    &:not(.collapsed) {
+      transform: translateX(0);
+    }
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .topbar {
+    padding: 0 $spacing-lg;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .sidebar {
+    width: 100%;
+    max-width: $sidebar-width;
+  }
+
+  .content-wrapper {
+    padding: 0;
+  }
+}

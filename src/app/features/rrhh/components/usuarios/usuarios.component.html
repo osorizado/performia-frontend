@@ -1,0 +1,254 @@
+<div class="usuarios-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando usuarios...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" class="usuarios-content">
+    <!-- Header -->
+    <div class="usuarios-header">
+      <div class="header-content">
+        <h1>Gestión de Usuarios</h1>
+        <p class="subtitle">Administra los usuarios del sistema de evaluación</p>
+      </div>
+      <button class="btn-primary" (click)="abrirModalNuevoUsuario()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Nuevo Usuario
+      </button>
+    </div>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="filters-section">
+      <div class="search-box">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm"
+          (input)="filtrarUsuarios()"
+          placeholder="Buscar por nombre o email...">
+      </div>
+
+      <div class="filter-group">
+        <label>Filtrar por rol:</label>
+        <select [(ngModel)]="filtroRol" (change)="filtrarUsuarios()">
+          <option value="todos">Todos los roles</option>
+          <option value="1">Admin</option>
+          <option value="2">Colaborador</option>
+          <option value="3">Manager</option>
+          <option value="4">RRHH</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Estado:</label>
+        <select [(ngModel)]="filtroEstado" (change)="filtrarUsuarios()">
+          <option value="todos">Todos los estados</option>
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Tabla de Usuarios -->
+    <div class="usuarios-table-container">
+      <div class="table-info">
+        <p>{{ usuariosFiltrados.length }} usuario(s) encontrado(s)</p>
+      </div>
+
+      <table class="usuarios-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Cargo</th>
+            <th>Manager</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let usuario of usuariosFiltrados" [class.inactive]="usuario.estado === 'Inactivo'">
+            <td>
+              <div class="user-cell">
+                <div class="user-avatar">
+                  {{ getInitials(usuario.nombre, usuario.apellido) }}
+                </div>
+                <div class="user-info">
+                  <p class="user-name">{{ usuario.nombre }} {{ usuario.apellido }}</p>
+                  <p class="user-cargo">{{ usuario.cargo || 'Sin cargo' }}</p>
+                </div>
+              </div>
+            </td>
+            <td>{{ usuario.correo }}</td>
+            <td>
+              <span class="badge" [ngClass]="getRolClass(usuario.id_rol)">
+                {{ getRolNombre(usuario.id_rol) }}
+              </span>
+            </td>
+            <td>{{ usuario.cargo || '-' }}</td>
+            <td>
+              <span *ngIf="usuario.manager_nombre" class="manager-name">
+                {{ usuario.manager_nombre }}
+              </span>
+              <span *ngIf="!usuario.manager_nombre" class="text-muted">Sin manager</span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="usuario.estado === 'Activo' ? 'badge-success' : 'badge-inactive'">
+                {{ usuario.estado }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-icon" (click)="editarUsuario(usuario)" title="Editar">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button 
+                  class="btn-icon" 
+                  [class.danger]="usuario.estado === 'Activo'"
+                  (click)="toggleEstadoUsuario(usuario)" 
+                  [title]="usuario.estado === 'Activo' ? 'Desactivar' : 'Activar'">
+                  <svg *ngIf="usuario.estado === 'Activo'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                  </svg>
+                  <svg *ngIf="usuario.estado === 'Inactivo'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="usuariosFiltrados.length === 0" class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <h2>No se encontraron usuarios</h2>
+        <p>No hay usuarios que coincidan con los filtros seleccionados</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear/Editar Usuario -->
+  <div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ modoEdicion ? 'Editar Usuario' : 'Nuevo Usuario' }}</h2>
+        <button class="close-btn" (click)="cerrarModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="usuarioForm" class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" formControlName="nombre" placeholder="Nombre del usuario">
+            <span class="error" *ngIf="usuarioForm.get('nombre')?.invalid && usuarioForm.get('nombre')?.touched">
+              El nombre es requerido
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label>Apellido *</label>
+            <input type="text" formControlName="apellido" placeholder="Apellido del usuario">
+            <span class="error" *ngIf="usuarioForm.get('apellido')?.invalid && usuarioForm.get('apellido')?.touched">
+              El apellido es requerido
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Correo Electrónico *</label>
+          <input type="email" formControlName="correo" placeholder="usuario@empresa.com">
+          <span class="error" *ngIf="usuarioForm.get('correo')?.invalid && usuarioForm.get('correo')?.touched">
+            Ingrese un correo válido
+          </span>
+        </div>
+        
+        <!-- ⭐ AGREGAR ESTE CAMPO -->
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" formControlName="telefono" placeholder="Ej: 989691973">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cargo</label>
+            <input type="text" formControlName="cargo" placeholder="Cargo del usuario">
+          </div>
+
+          <div class="form-group">
+            <label>Área</label>
+            <input type="text" formControlName="area" placeholder="Área del usuario">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Rol *</label>
+            <select formControlName="id_rol" (change)="onRolChange()">
+              <option value="">Seleccionar rol</option>
+              <option value="1">Admin</option>
+              <option value="2">Colaborador</option>
+              <option value="3">Manager</option>
+              <option value="4">RRHH</option>
+            </select>
+            <span class="error" *ngIf="usuarioForm.get('id_rol')?.invalid && usuarioForm.get('id_rol')?.touched">
+              El rol es requerido
+            </span>
+          </div>
+
+          <div class="form-group" *ngIf="mostrarSelectorManager">
+            <label>Manager Asignado</label>
+            <select formControlName="manager_id">
+              <option value="">Sin manager</option>
+              <option *ngFor="let manager of listaManagers" [value]="manager.id_usuario">
+                {{ manager.nombre }} {{ manager.apellido }}
+              </option>
+            </select>
+            <span class="help-text">
+              Selecciona el manager que supervisará a este colaborador
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Estado</label>
+          <select formControlName="estado">
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="!modoEdicion">
+          <label>Contraseña *</label>
+          <input type="password" formControlName="password" placeholder="Contraseña temporal">
+          <span class="help-text">El usuario deberá cambiarla en su primer acceso</span>
+          <span class="error" *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched">
+            La contraseña debe tener al menos 6 caracteres
+          </span>
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-primary" (click)="guardarUsuario()" [disabled]="!usuarioForm.valid || guardando">
+          {{ guardando ? 'Guardando...' : (modoEdicion ? 'Actualizar' : 'Crear Usuario') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

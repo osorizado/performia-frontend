@@ -1,0 +1,130 @@
+<div class="login-page">
+  <!-- Header -->
+  <header class="main-header">
+    <div class="logo-container">
+      <img src="assets/logo-performia.png" alt="Performia" />
+    </div>
+    <button class="primary-button" routerLink="/auth/homepage">Ir a Página Principal</button>
+  </header>
+
+  <main class="login-main">
+    <!-- Left Side - Image -->
+    <div class="login-left">
+      <img src="assets/person-writing.png" alt="Profesional" />
+    </div>
+
+    <!-- Right Side - Form -->
+    <div class="registro-right">
+      <div class="registro-box">
+        <h2>¡Crea tu cuenta!</h2>
+        <p>Empieza tu viaje hacia una vida activa y conectada.</p>
+
+        <!-- User Icon -->
+        <div class="user-icon">
+          <svg width="60" height="60" viewBox="0 0 80 80" fill="none">
+            <circle cx="40" cy="40" r="40" fill="#1E3A8A" opacity="0.1"/>
+            <path d="M40 42C47.732 42 54 35.732 54 28C54 20.268 47.732 14 40 14C32.268 14 26 20.268 26 28C26 35.732 32.268 42 40 42Z" fill="#1E3A8A"/>
+            <path d="M40 46C28.954 46 20 54.954 20 66H60C60 54.954 51.046 46 40 46Z" fill="#1E3A8A"/>
+          </svg>
+        </div>
+
+        <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+          <!-- Nombres -->
+          <div class="form-group">
+            <label>Nombres<span class="required">*</span></label>
+            <input formControlName="nombre" type="text" placeholder="Nombres" />
+            <div class="error-message" *ngIf="registroForm.get('nombre')?.touched && registroForm.get('nombre')?.invalid">
+              Este campo es obligatorio.
+            </div>
+          </div>
+
+          <!-- Apellidos -->
+          <div class="form-group">
+            <label>Apellidos<span class="required">*</span></label>
+            <input formControlName="apellido" type="text" placeholder="Apellidos" />
+            <div class="error-message" *ngIf="registroForm.get('apellido')?.touched && registroForm.get('apellido')?.invalid">
+              Este campo es obligatorio.
+            </div>
+          </div>
+
+          <!-- Correo y Teléfono en fila -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Correo Corporativo<span class="required">*</span></label>
+              <input formControlName="email" type="email" placeholder="usuario@empresa.com" />
+              <div class="error-message" *ngIf="registroForm.get('email')?.touched && registroForm.get('email')?.errors">
+                <span *ngIf="registroForm.get('email')?.errors?.['required']">Este campo es obligatorio.</span>
+                <span *ngIf="registroForm.get('email')?.errors?.['email']">Debe ser un correo válido.</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input formControlName="telefono" type="tel" placeholder="+51 999 999 999" />
+            </div>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="form-group">
+            <label>Contraseña<span class="required">*</span></label>
+            <input formControlName="password" type="password" placeholder="Contraseña" />
+            <div class="error-message" *ngIf="registroForm.get('password')?.touched && registroForm.get('password')?.invalid">
+              Mínimo 8 caracteres.
+            </div>
+          </div>
+
+          <!-- Repetir Contraseña -->
+          <div class="form-group">
+            <label>Repita Contraseña<span class="required">*</span></label>
+            <input formControlName="repetir_password" type="password" placeholder="Repita Contraseña" />
+            <div class="error-message" *ngIf="registroForm.get('repetir_password')?.touched && registroForm.get('repetir_password')?.invalid">
+              Este campo es obligatorio.
+            </div>
+          </div>
+
+          <!-- Puesto, Área, Rol en fila -->
+          <div class="form-row three-columns">
+            <div class="form-group">
+              <label>Puesto<span class="required">*</span></label>
+              <input formControlName="puesto" type="text" placeholder="Ej: Senior Develop" />
+            </div>
+
+            <div class="form-group">
+              <label>Área<span class="required">*</span></label>
+              <select formControlName="id_area">
+                <option value="">Seleccionar</option>
+                <option *ngFor="let area of areas" [value]="area.id_area">{{ area.nombre }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Rol en el Sistema<span class="required">*</span></label>
+              <select formControlName="id_rol">
+                <option value="">Seleccionar</option>
+                <option *ngFor="let rol of roles" [value]="rol.id_rol">{{ rol.nombre }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Mensajes de error y éxito -->
+          <div *ngIf="errorMessage" class="error-message global-error">{{ errorMessage }}</div>
+          <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+
+          <!-- Botón Submit -->
+          <button class="submit-button" type="submit" [disabled]="loading">
+            <span *ngIf="!loading">Siguiente</span>
+            <span *ngIf="loading" class="loading-spinner"></span>
+          </button>
+
+          <!-- Términos -->
+          <p class="terms-text">
+            Al registrarte, aceptas los 
+            <a href="/terminos" target="_blank" class="subrayado">Términos del Servicio</a>
+            y la 
+            <a href="/politica" target="_blank" class="subrayado">Política de Privacidad</a>.
+          </p>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>

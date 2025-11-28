@@ -1,0 +1,89 @@
+<div class="vista-areas-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando vista por áreas...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" class="areas-content">
+    <!-- Header -->
+    <div class="areas-header">
+      <div class="header-left">
+        <button class="btn-back" (click)="volver()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div class="header-content">
+          <h1>Vista por Áreas</h1>
+          <p class="subtitle">Análisis detallado de desempeño por departamento</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranking de Áreas -->
+    <div class="areas-ranking">
+      <div *ngFor="let area of areasRanking; let i = index" class="area-card" [class.destacada]="i === 0">
+        <div class="area-rank" [class.first]="i === 0" [class.second]="i === 1" [class.third]="i === 2">
+          <span class="rank-number">#{{ i + 1 }}</span>
+          <svg *ngIf="i === 0" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+        
+        <div class="area-content">
+          <div class="area-header">
+            <div class="area-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <div class="area-info">
+              <h2>{{ area.area }}</h2>
+              <p>{{ area.total_colaboradores }} colaboradores</p>
+            </div>
+          </div>
+
+          <div class="area-metrics">
+            <div class="metric">
+              <div class="metric-label">Promedio</div>
+              <div class="metric-value" [class.excellent]="(area.promedio ?? 0) >= 4.5" [class.good]="(area.promedio ?? 0) >= 4.0 && (area.promedio ?? 0) < 4.5">
+                {{ (area.promedio ?? 0).toFixed(2) }}
+              </div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Evaluaciones</div>
+              <div class="metric-value secondary">{{ area.evaluaciones_completas || 0 }}</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Completitud</div>
+              <div class="metric-value secondary">
+                {{ area.total_colaboradores > 0 ? ((area.evaluaciones_completas / area.total_colaboradores) * 100).toFixed(0) : '0' }}%
+              </div>
+            </div>
+          </div>
+
+          <div class="area-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="((area.promedio ?? 0) / 5) * 100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparativa General -->
+    <div class="comparativa-section">
+      <div class="section-header">
+        <h2>📊 Comparativa de Áreas</h2>
+        <p>Visualización de desempeño entre departamentos</p>
+      </div>
+      <div class="chart-container">
+        <canvas #areasChart></canvas>
+      </div>
+    </div>
+  </div>
+</div>

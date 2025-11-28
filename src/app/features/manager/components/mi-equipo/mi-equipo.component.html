@@ -1,0 +1,90 @@
+<div class="mi-equipo-container">
+  <div class="equipo-header">
+    <div class="header-content">
+      <h1>Mi Equipo</h1>
+      <p class="subtitle">Vista detallada del equipo y sus evaluaciones</p>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input 
+        type="text" 
+        placeholder="Buscar colaborador..." 
+        [(ngModel)]="busqueda"
+        class="search-input">
+    </div>
+
+    <select [(ngModel)]="filtroEstado" class="filter-select">
+      <option value="todos">Todos los estados</option>
+      <option value="Completada">Completada</option>
+      <option value="En Curso">En Curso</option>
+      <option value="Pendiente">Pendiente</option>
+    </select>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando colaboradores...</p>
+  </div>
+
+  <!-- Lista de colaboradores -->
+  <div *ngIf="!loading" class="colaboradores-grid">
+    <div *ngFor="let colaborador of colaboradoresFiltrados" class="colaborador-card">
+      <div class="card-header">
+        <div class="colaborador-avatar">
+          <span>{{ colaborador.nombre.charAt(0) }}{{ colaborador.apellido.charAt(0) }}</span>
+        </div>
+        <div class="colaborador-info">
+          <h3>{{ colaborador.nombre }} {{ colaborador.apellido }}</h3>
+          <p class="cargo">{{ colaborador.cargo }}</p>
+          <p class="area">{{ colaborador.area }}</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="stat-row">
+          <div class="stat-item">
+            <span class="stat-label">Desempeño</span>
+            <span class="stat-value">{{ colaborador.desempeno_promedio || '--' }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Objetivos</span>
+            <span class="stat-value">{{ colaborador.objetivos_completados || 0 }}/10</span>
+          </div>
+        </div>
+
+        <div class="status-row">
+          <span class="badge" [ngClass]="getEstadoBadgeClass(colaborador.estado_evaluacion || 'Pendiente')">
+            {{ colaborador.estado_evaluacion || 'Pendiente' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button class="btn-secondary" (click)="verDetalles(colaborador)">
+          Ver Detalles
+        </button>
+        <button 
+          class="btn-primary" 
+          (click)="evaluarColaborador(colaborador)"
+          *ngIf="colaborador.estado_evaluacion !== 'Completada'">
+          Evaluar
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="colaboradoresFiltrados.length === 0" class="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+      <h2>No hay colaboradores</h2>
+      <p>No se encontraron colaboradores con los filtros seleccionados.</p>
+    </div>
+  </div>
+</div>

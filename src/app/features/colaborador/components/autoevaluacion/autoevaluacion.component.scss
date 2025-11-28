@@ -1,0 +1,562 @@
+// =============================================================================
+// PERFORMIA - Autoevaluación Component
+// Estilos para el componente de autoevaluación del colaborador
+// =============================================================================
+
+@import '../../../../../styles/variables';
+@import '../../../../../styles/mixins';
+
+// =============================================================================
+// CONTAINER PRINCIPAL
+// =============================================================================
+
+.autoevaluacion-container {
+  min-height: calc(100vh - #{$header-height});
+  background-color: $neutral-50;
+  padding: $spacing-2xl;
+
+  @media (max-width: $breakpoint-md) {
+    padding: $spacing-lg;
+  }
+}
+
+// =============================================================================
+// LOADING STATE
+// =============================================================================
+
+.loading-state {
+  @include flex-center;
+  @include flex-column;
+  min-height: 60vh;
+  gap: $spacing-lg;
+
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid $primary-blue-lightest;
+    border-top-color: $primary-blue;
+    border-radius: $border-radius-full;
+    animation: spin 0.8s linear infinite;
+  }
+
+  p {
+    color: $neutral-600;
+    font-size: $font-size-large;
+    font-weight: $font-weight-medium;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// =============================================================================
+// EMPTY STATE
+// =============================================================================
+
+.empty-state {
+  @include flex-center;
+  @include flex-column;
+  min-height: 60vh;
+  text-align: center;
+  padding: $spacing-3xl;
+
+  svg {
+    width: $icon-xl * 2;
+    height: $icon-xl * 2;
+    color: $neutral-400;
+    margin-bottom: $spacing-xl;
+  }
+
+  h2 {
+    color: $neutral-900;
+    font-size: $font-size-h3;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-md;
+  }
+
+  p {
+    color: $neutral-600;
+    font-size: $font-size-base;
+    margin-bottom: $spacing-xl;
+    max-width: 500px;
+  }
+
+  .btn-primary {
+    @include btn-primary;
+  }
+}
+
+// =============================================================================
+// INICIO DE EVALUACIÓN
+// =============================================================================
+
+.inicio-evaluacion {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.evaluacion-card {
+  @include card;
+  background: $white;
+  padding: 0;
+  overflow: hidden;
+
+  .card-header {
+    background: linear-gradient(135deg, $primary-blue 0%, $primary-blue-light 100%);
+    color: $white;
+    padding: $spacing-3xl $spacing-2xl;
+    text-align: center;
+
+    .header-icon {
+      width: 80px;
+      height: 80px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: $border-radius-full;
+      @include flex-center;
+      margin: 0 auto $spacing-lg;
+
+      svg {
+        width: $icon-xl;
+        height: $icon-xl;
+        color: $white;
+      }
+    }
+
+    h1 {
+      font-size: $font-size-h2;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-sm;
+      color: $white;
+    }
+
+    .subtitle {
+      font-size: $font-size-large;
+      opacity: 0.9;
+      margin: 0;
+    }
+  }
+
+  .card-body {
+    padding: $spacing-2xl;
+
+    .info-section,
+    .descripcion-section,
+    .instrucciones-section {
+      margin-bottom: $spacing-2xl;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      h3 {
+        color: $neutral-900;
+        font-size: $font-size-h4;
+        font-weight: $font-weight-bold;
+        margin-bottom: $spacing-md;
+      }
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: $spacing-lg;
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-xs;
+
+        .label {
+          font-size: $font-size-small;
+          font-weight: $font-weight-semibold;
+          color: $neutral-600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .value {
+          font-size: $font-size-large;
+          font-weight: $font-weight-bold;
+          color: $neutral-900;
+        }
+      }
+    }
+
+    .descripcion-section p {
+      color: $neutral-700;
+      font-size: $font-size-base;
+      line-height: $line-height-relaxed;
+    }
+
+    .instrucciones-section ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        padding-left: $spacing-xl;
+        margin-bottom: $spacing-md;
+        color: $neutral-700;
+        font-size: $font-size-base;
+        line-height: $line-height-relaxed;
+        position: relative;
+
+        &::before {
+          content: '✓';
+          position: absolute;
+          left: 0;
+          color: $success-green;
+          font-weight: $font-weight-bold;
+          font-size: $font-size-large;
+        }
+      }
+    }
+  }
+
+  .card-footer {
+    padding: $spacing-xl $spacing-2xl;
+    background-color: $neutral-50;
+    @include flex-between;
+    border-top: 1px solid $neutral-200;
+
+    .btn-secondary {
+      @include btn-secondary;
+    }
+
+    .btn-primary {
+      @include btn-primary;
+      gap: $spacing-sm;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid $white;
+      border-top-color: transparent;
+      border-radius: $border-radius-full;
+      animation: spin 0.6s linear infinite;
+    }
+  }
+}
+
+// =============================================================================
+// FORMULARIO DE EVALUACIÓN
+// =============================================================================
+
+.evaluacion-form-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.evaluacion-header {
+  background: $white;
+  border-radius: $border-radius-lg;
+  padding: $spacing-2xl;
+  margin-bottom: $spacing-2xl;
+  box-shadow: $shadow-md;
+
+  .header-content {
+    h1 {
+      color: $neutral-900;
+      font-size: $font-size-h2;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-lg;
+    }
+
+    .progress-info {
+      .progress-text {
+        display: block;
+        color: $neutral-700;
+        font-size: $font-size-small;
+        font-weight: $font-weight-semibold;
+        margin-bottom: $spacing-sm;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background-color: $neutral-200;
+        border-radius: $border-radius-full;
+        overflow: hidden;
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, $primary-blue 0%, $primary-blue-light 100%);
+          border-radius: $border-radius-full;
+          transition: width 0.3s ease;
+        }
+      }
+    }
+  }
+}
+
+// =============================================================================
+// PREGUNTAS
+// =============================================================================
+
+.preguntas-container {
+  .categoria-section {
+    margin-bottom: $spacing-3xl;
+
+    .categoria-titulo {
+      color: $neutral-900;
+      font-size: $font-size-h3;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-xl;
+      padding-bottom: $spacing-md;
+      border-bottom: 3px solid $primary-blue;
+    }
+  }
+}
+
+.pregunta-card {
+  @include card;
+  background: $white;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  transition: transform $transition-base, box-shadow $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+
+  .pregunta-header {
+    margin-bottom: $spacing-lg;
+
+    .pregunta-numero {
+      display: inline-block;
+      background-color: $primary-blue-lightest;
+      color: $primary-blue;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-xsmall;
+      font-weight: $font-weight-bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: $spacing-sm;
+    }
+
+    .pregunta-texto {
+      color: $neutral-900;
+      font-size: $font-size-large;
+      font-weight: $font-weight-semibold;
+      line-height: $line-height-relaxed;
+      margin: 0;
+    }
+  }
+}
+
+// =============================================================================
+// CALIFICACIÓN
+// =============================================================================
+
+.calificacion-container {
+  margin-bottom: $spacing-lg;
+
+  .calificacion-labels {
+    @include flex-between;
+    margin-bottom: $spacing-md;
+
+    .label-min,
+    .label-max {
+      font-size: $font-size-small;
+      font-weight: $font-weight-medium;
+      color: $neutral-600;
+    }
+  }
+
+  .calificacion-opciones {
+    display: flex;
+    gap: $spacing-sm;
+    justify-content: space-between;
+
+    .opcion-btn {
+      flex: 1;
+      height: 60px;
+      background-color: $neutral-100;
+      border: 2px solid $neutral-300;
+      border-radius: $border-radius-md;
+      color: $neutral-700;
+      font-size: $font-size-h4;
+      font-weight: $font-weight-bold;
+      cursor: pointer;
+      transition: all $transition-base;
+      @include flex-center;
+
+      &:hover {
+        background-color: $primary-blue-lightest;
+        border-color: $primary-blue-lighter;
+        transform: translateY(-2px);
+      }
+
+      &.active {
+        background-color: $primary-blue;
+        border-color: $primary-blue;
+        color: $white;
+        box-shadow: $shadow-md;
+        transform: translateY(-2px);
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: $focus-ring;
+      }
+    }
+  }
+}
+
+// =============================================================================
+// COMENTARIOS
+// =============================================================================
+
+.comentario-section {
+  label {
+    display: block;
+    color: $neutral-700;
+    font-size: $font-size-small;
+    font-weight: $font-weight-semibold;
+    margin-bottom: $spacing-sm;
+  }
+
+  textarea {
+    @include input-base;
+    resize: vertical;
+    min-height: 80px;
+    font-family: $font-family-primary;
+  }
+}
+
+// =============================================================================
+// ACCIONES DEL FORMULARIO
+// =============================================================================
+
+.form-actions {
+  background: $white;
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  margin-top: $spacing-2xl;
+  box-shadow: $shadow-md;
+  display: flex;
+  gap: $spacing-md;
+  justify-content: flex-end;
+  position: sticky;
+  bottom: $spacing-lg;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    svg {
+      width: $icon-sm;
+      height: $icon-sm;
+    }
+  }
+
+  .btn-secondary {
+    @include btn-secondary;
+  }
+
+  .btn-outline {
+    @include btn-base;
+    background-color: $white;
+    color: $primary-blue;
+    border: 2px solid $primary-blue;
+
+    &:hover:not(:disabled) {
+      background-color: $primary-blue-lightest;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-primary {
+    @include btn-primary;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      
+      &:hover {
+        background-color: $primary-blue;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@media (max-width: $breakpoint-md) {
+  .autoevaluacion-container {
+    padding: $spacing-md;
+  }
+
+  .evaluacion-card {
+    .card-header {
+      padding: $spacing-xl;
+
+      h1 {
+        font-size: $font-size-h3;
+      }
+    }
+
+    .card-body {
+      padding: $spacing-lg;
+    }
+
+    .card-footer {
+      flex-direction: column;
+      gap: $spacing-md;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  .evaluacion-header {
+    padding: $spacing-lg;
+
+    .header-content h1 {
+      font-size: $font-size-h3;
+    }
+  }
+
+  .pregunta-card {
+    padding: $spacing-lg;
+  }
+
+  .calificacion-opciones {
+    .opcion-btn {
+      height: 50px;
+      font-size: $font-size-h5;
+    }
+  }
+
+  .form-actions {
+    flex-direction: column;
+    position: static;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .calificacion-opciones {
+    flex-wrap: wrap;
+    
+    .opcion-btn {
+      flex: 0 0 calc(20% - #{$spacing-xs});
+      height: 45px;
+    }
+  }
+}

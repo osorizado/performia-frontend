@@ -1,0 +1,234 @@
+@import 'src/styles/variables';
+@import 'src/styles/mixins';
+
+.director-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: $neutral-50;
+}
+
+// ========================================
+// SIDEBAR
+// ========================================
+.sidebar {
+  width: 280px;
+  background: $neutral-900;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+
+  @include respond-to(lg) {
+    width: 260px;
+  }
+}
+
+.sidebar-header {
+  padding: $spacing-2xl $spacing-xl;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  svg {
+    width: 40px;
+    height: 40px;
+    color: $primary-blue;
+    flex-shrink: 0;
+  }
+}
+
+.logo-text {
+  h1 {
+    font-size: $font-size-large;
+    font-weight: $font-weight-bold;
+    line-height: 1.2;
+    margin: 0;
+    color: $white;
+  }
+
+  p {
+    font-size: $font-size-small;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-weight: $font-weight-regular;
+  }
+}
+
+// ========================================
+// SIDEBAR NAVIGATION
+// ========================================
+.sidebar-nav {
+  flex: 1;
+  padding: $spacing-xl 0;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-xl;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: $white;
+  }
+
+  &.active {
+    background: rgba(59, 130, 246, 0.1);
+    color: $primary-blue;
+    border-left-color: $primary-blue;
+  }
+}
+
+// ========================================
+// SIDEBAR FOOTER
+// ========================================
+.sidebar-footer {
+  padding: $spacing-xl;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex: 1;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-full;
+  background: linear-gradient(135deg, $primary-blue 0%, $primary-blue-light 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-base;
+  color: $white;
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+
+  .user-name {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $white;
+    margin: 0 0 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-role {
+    font-size: $font-size-small;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+  }
+}
+
+.logout-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-md;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+  }
+}
+
+// ========================================
+// MAIN CONTENT
+// ========================================
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  min-height: 100vh;
+  background-color: $neutral-50;
+
+  @include respond-to(lg) {
+    margin-left: 260px;
+  }
+}
+
+// ========================================
+// RESPONSIVE
+// ========================================
+@media (max-width: $breakpoint-lg) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+
+    &.open {
+      transform: translateX(0);
+    }
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}
