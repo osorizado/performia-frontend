@@ -117,12 +117,12 @@ export class ManagerDashboardComponent implements OnInit {
     });
   }
 
-  evaluarColaborador(colaborador: Colaborador): void {
-    // Navegar a la vista de evaluación
-    this.router.navigate(['/manager/evaluaciones'], {
-      queryParams: { userId: colaborador.id_usuario }
-    });
-  }
+ evaluarColaborador(colaborador: Colaborador): void {
+  // Navegar a evaluar colaborador (usa el ID del colaborador)
+  this.router.navigate(['/manager/evaluar'], {
+    queryParams: { userId: colaborador.id_usuario }
+  });
+}
 
   verTodosColaboradores(): void {
     this.router.navigate(['/manager/mi-equipo']);

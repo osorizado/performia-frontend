@@ -25,7 +25,8 @@
           </svg>
         </div>
         <h1>Autoevaluación</h1>
-        <p class="subtitle">{{ evaluacionPendiente.formulario.titulo }}</p>
+        <!-- ⭐ CORREGIDO: evaluacionPendiente.titulo en lugar de evaluacionPendiente.formulario.titulo -->
+        <p class="subtitle">{{ evaluacionPendiente.titulo }}</p>
       </div>
 
       <div class="card-body">
@@ -34,7 +35,8 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="label">Periodo:</span>
-              <span class="value">{{ evaluacionPendiente.tipo }}</span>
+              <!-- ⭐ CORREGIDO: evaluacionPendiente.periodo en lugar de tipo -->
+              <span class="value">{{ evaluacionPendiente.periodo }}</span>
             </div>
             <div class="info-item">
               <span class="label">Fecha límite:</span>
@@ -49,7 +51,8 @@
 
         <div class="descripcion-section">
           <h3>Descripción</h3>
-          <p>{{ evaluacionPendiente.formulario.descripcion }}</p>
+          <!-- ⭐ CORREGIDO: evaluacionPendiente.descripcion en lugar de evaluacionPendiente.formulario.descripcion -->
+          <p>{{ evaluacionPendiente.descripcion }}</p>
         </div>
 
         <div class="instrucciones-section">
@@ -79,7 +82,8 @@
     <!-- Header con progreso -->
     <div class="evaluacion-header">
       <div class="header-content">
-        <h1>Autoevaluación - {{ evaluacionPendiente?.tipo }}</h1>
+        <!-- ⭐ CORREGIDO: evaluacionPendiente.periodo en lugar de tipo -->
+        <h1>Autoevaluación - {{ evaluacionPendiente?.periodo }}</h1>
         <div class="progress-info">
           <span class="progress-text">Progreso: {{ progresoActual }}%</span>
           <div class="progress-bar">
@@ -95,36 +99,53 @@
         <div *ngFor="let categoria of getCategorias()" class="categoria-section">
           <h2 class="categoria-titulo">{{ categoria }}</h2>
           
-          <div *ngFor="let pregunta of getPreguntasPorCategoria(categoria); let i = index" class="pregunta-card">
+          <!-- ⭐ YA CORRECTO: id_pregunta, texto_pregunta, tipo_pregunta -->
+          <div *ngFor="let pregunta of getPreguntasPorCategoria(categoria)" class="pregunta-card">
             <div class="pregunta-header">
-              <span class="pregunta-numero">Pregunta {{ pregunta.id }}</span>
-              <h3 class="pregunta-texto">{{ pregunta.texto }}</h3>
+              <span class="pregunta-numero">Pregunta {{ pregunta.id_pregunta }}</span>
+              <h3 class="pregunta-texto">{{ pregunta.texto_pregunta }}</h3>
             </div>
 
             <!-- Escala de calificación -->
-            <div class="calificacion-container" *ngIf="pregunta.tipo === 'escala'">
+            <div class="calificacion-container" *ngIf="pregunta.tipo_pregunta === 'Escala'">
               <div class="calificacion-labels">
                 <span class="label-min">Nunca (1)</span>
                 <span class="label-max">Siempre (5)</span>
               </div>
               <div class="calificacion-opciones">
                 <button
-                  *ngFor="let opcion of pregunta.opciones"
+                  *ngFor="let opcion of getOpciones(pregunta)"
                   type="button"
                   class="opcion-btn"
-                  [class.active]="evaluacionForm.get('pregunta_' + pregunta.id)?.value === opcion.valor"
-                  (click)="responderPregunta(pregunta.id, opcion.valor)">
+                  [class.active]="evaluacionForm.get('pregunta_' + pregunta.id_pregunta)?.value === opcion.valor"
+                  (click)="responderPregunta(pregunta.id_pregunta, opcion.valor)">
                   {{ opcion.etiqueta }}
                 </button>
               </div>
             </div>
 
+            <!-- ⭐ NUEVO: Pregunta de tipo TEXTO -->
+            <div class="respuesta-texto-container" *ngIf="pregunta.tipo_pregunta === 'Texto'">
+              <textarea
+                [id]="'respuesta_' + pregunta.id_pregunta"
+                [formControlName]="'pregunta_' + pregunta.id_pregunta"
+                rows="5"
+                class="respuesta-textarea"
+                placeholder="Escribe tu respuesta aquí..."
+                [required]="pregunta.requerido"
+                (blur)="calcularProgreso()"></textarea>
+              <div *ngIf="pregunta.requerido && evaluacionForm.get('pregunta_' + pregunta.id_pregunta)?.invalid && evaluacionForm.get('pregunta_' + pregunta.id_pregunta)?.touched" 
+                   class="error-message">
+                Este campo es requerido
+              </div>
+            </div>
+
             <!-- Comentario adicional -->
             <div class="comentario-section">
-              <label [for]="'comentario_' + pregunta.id">Comentarios adicionales (opcional)</label>
+              <label [for]="'comentario_' + pregunta.id_pregunta">Comentarios adicionales (opcional)</label>
               <textarea
-                [id]="'comentario_' + pregunta.id"
-                [formControlName]="'comentario_' + pregunta.id"
+                [id]="'comentario_' + pregunta.id_pregunta"
+                [formControlName]="'comentario_' + pregunta.id_pregunta"
                 rows="3"
                 placeholder="Describe tus logros, desafíos o contexto adicional..."></textarea>
             </div>
@@ -137,13 +158,13 @@
         <button type="button" class="btn-secondary" (click)="cancelar()" [disabled]="guardando">
           Cancelar
         </button>
-        <button type="button" class="btn-outline" (click)="guardarRespuestas()" [disabled]="guardando || !evaluacionForm.valid">
+        <button type="button" class="btn-outline" (click)="guardarRespuestas()" [disabled]="guardando">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
           </svg>
           Guardar Progreso
         </button>
-        <button type="button" class="btn-primary" (click)="enviarEvaluacion()" [disabled]="guardando || !evaluacionForm.valid">
+        <button type="button" class="btn-primary" (click)="enviarEvaluacion()" [disabled]="guardando || !todasLasPreguntasRequeridas()">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>

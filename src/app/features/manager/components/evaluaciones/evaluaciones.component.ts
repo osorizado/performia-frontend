@@ -1,23 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { EvaluacionesService, Evaluacion } from '../../../colaborador/services/evaluaciones.service';
+import { EvaluacionesService } from '../../../colaborador/services/evaluaciones.service';
 import { EquipoService, Colaborador } from '../../services/equipo.service';
 import { AuthService } from '@core/services/auth.service';
+import { forkJoin } from 'rxjs';
 
 interface EvaluacionPendiente {
-  id: number;
-  colaborador: Colaborador;
+  id_evaluacion: number;
+  id_colaborador: number;
+  nombre_colaborador: string;
+  apellido_colaborador: string;
+  cargo: string;
+  area: string;
   periodo: string;
-  fecha_limite: string;
-  autoevaluacion_completada: boolean;
+  fecha_inicio: string;
+  fecha_fin: string;
+  tipo_evaluacion: string;
+  es_autoevaluacion: boolean;
 }
 
 interface EvaluacionCompletada {
-  id: number;
-  colaborador: Colaborador;
+  id_evaluacion: number;
+  id_colaborador: number;
+  nombre_colaborador: string;
+  apellido_colaborador: string;
+  cargo: string;
   periodo: string;
   fecha_completada: string;
-  puntuacion_final: number;
+  puntaje_total: number;
 }
 
 @Component({
@@ -34,10 +44,12 @@ export class EvaluacionesComponent implements OnInit {
   evaluacionesPendientes: EvaluacionPendiente[] = [];
   evaluacionesCompletadas: EvaluacionCompletada[] = [];
   historialEvaluaciones: EvaluacionCompletada[] = [];
+  colaboradoresMap: Map<number, Colaborador> = new Map();
   
   // Filtros
   filtroPeriodo: string = 'todos';
   filtroColaborador: string = 'todos';
+  periodosDisponibles: string[] = [];
   
   // Usuario
   managerName: string = '';
@@ -64,149 +76,113 @@ export class EvaluacionesComponent implements OnInit {
   loadEvaluacionesData(): void {
     this.loading = true;
     
-    // Cargar colaboradores del equipo
-    this.equipoService.getMiEquipo().subscribe({
-      next: (colaboradores) => {
-        // Generar evaluaciones pendientes (simuladas por ahora)
-        this.generarEvaluacionesPendientes(colaboradores);
+    // ✅ CAMBIO: Usar los nuevos endpoints específicos para managers
+    forkJoin({
+      colaboradores: this.equipoService.getMiEquipo(),
+      evaluacionesPendientes: this.evaluacionesService.getEvaluacionesPendientesManager(), // ✅ NUEVO
+      evaluacionesCompletadas: this.evaluacionesService.getEvaluacionesEquipoCompletadas() // ✅ NUEVO
+    }).subscribe({
+      next: (response) => {
+        // Procesar colaboradores
+        this.procesarColaboradores(response.colaboradores);
         
-        // Cargar evaluaciones completadas del backend
-        this.loadEvaluacionesCompletadas();
+        // Procesar evaluaciones pendientes
+        this.procesarEvaluacionesPendientes(response.evaluacionesPendientes);
+        
+        // Procesar evaluaciones completadas
+        this.procesarEvaluacionesCompletadas(response.evaluacionesCompletadas);
+        
+        // Extraer períodos únicos
+        this.extraerPeriodos();
         
         this.loading = false;
       },
       error: (error: any) => {
-        console.error('Error al cargar colaboradores:', error);
-        // Si es 422, no tiene equipo asignado
-        if (error.status === 422) {
-          console.warn('El manager no tiene colaboradores asignados');
+        console.error('Error al cargar datos:', error);
+        this.loading = false;
+        
+        // Manejar caso donde no hay equipo
+        if (error.status === 422 || error.status === 404) {
           this.evaluacionesPendientes = [];
+          this.evaluacionesCompletadas = [];
+          this.historialEvaluaciones = [];
         }
-        this.loading = false;
       }
     });
   }
 
-  generarEvaluacionesPendientes(colaboradores: Colaborador[]): void {
-    // TODO: En producción, esto debe venir del backend
-    // Por ahora, generamos evaluaciones pendientes simuladas
-    
-    const periodoActual = this.getPeriodoActual();
-    const fechaLimite = new Date();
-    fechaLimite.setDate(fechaLimite.getDate() + 15); // 15 días para completar
-    
-    this.evaluacionesPendientes = colaboradores.map((colaborador, index) => ({
-      id: index + 1,
-      colaborador: colaborador,
-      periodo: periodoActual,
-      fecha_limite: fechaLimite.toISOString(),
-      autoevaluacion_completada: Math.random() > 0.5 // Simulado
-    }));
-  }
-
-  loadEvaluacionesCompletadas(): void {
-    // Cargar evaluaciones completadas desde el backend
-    this.evaluacionesService.getMisEvaluaciones().subscribe({
-      next: (evaluaciones) => {
-        // Filtrar solo las completadas
-        const completadas = evaluaciones.filter(ev => ev.estado === 'completada');
-        
-        // Convertir a formato de vista (necesitamos datos del colaborador)
-        // TODO: El backend debe incluir datos del colaborador en la respuesta
-        this.evaluacionesCompletadas = [];
-        this.historialEvaluaciones = [];
-        
-        // Por ahora, usar datos simulados
-        this.generarEvaluacionesCompletadasSimuladas();
-      },
-      error: (error: any) => {
-        console.error('Error al cargar evaluaciones completadas:', error);
-        this.generarEvaluacionesCompletadasSimuladas();
-      }
+  procesarColaboradores(colaboradores: Colaborador[]): void {
+    colaboradores.forEach(col => {
+      this.colaboradoresMap.set(col.id_usuario, col);
     });
   }
 
-  generarEvaluacionesCompletadasSimuladas(): void {
-    // TODO: Eliminar cuando el backend esté completo
-    const colaboradoresEjemplo: Colaborador[] = [
-      {
-        id_usuario: 1,
-        nombre: 'Juan',
-        apellido: 'Pérez',
-        correo: 'juan.perez@empresa.com',
-        cargo: 'Developer',
-        area: 'Tecnología',
-        desempeno_promedio: 4.5,
-        objetivos_completados: 5,
-        objetivos_totales: 8,
-        estado: 'Activo'
-      },
-      {
-        id_usuario: 2,
-        nombre: 'María',
-        apellido: 'González',
-        correo: 'maria.gonzalez@empresa.com',
-        cargo: 'Senior Developer',
-        area: 'Tecnología',
-        desempeno_promedio: 4.8,
-        objetivos_completados: 7,
-        objetivos_totales: 8,
-        estado: 'Activo'
-      }
-    ];
+  procesarEvaluacionesPendientes(evaluaciones: any[]): void {
+    this.evaluacionesPendientes = evaluaciones
+      .filter(ev => ev.estado === 'Pendiente' || ev.estado === 'En Curso')
+      .map(ev => {
+        const colaborador = this.colaboradoresMap.get(ev.id_evaluado);
+        const esAutoevaluacion = ev.id_evaluador === ev.id_evaluado;
+        
+        return {
+          id_evaluacion: ev.id_evaluacion,
+          id_colaborador: ev.id_evaluado,
+          nombre_colaborador: colaborador?.nombre || 'N/A',
+          apellido_colaborador: colaborador?.apellido || '',
+          cargo: colaborador?.cargo || 'N/A',
+          area: colaborador?.area || 'N/A',
+          periodo: ev.periodo,
+          fecha_inicio: ev.fecha_inicio,
+          fecha_fin: ev.fecha_fin,
+          tipo_evaluacion: ev.tipo_evaluacion,
+          es_autoevaluacion: esAutoevaluacion
+        };
+      });
+  }
 
-    this.evaluacionesCompletadas = [
-      {
-        id: 1,
-        colaborador: colaboradoresEjemplo[0],
-        periodo: '2025-Q3',
-        fecha_completada: '2025-09-30',
-        puntuacion_final: 4.5
-      },
-      {
-        id: 2,
-        colaborador: colaboradoresEjemplo[1],
-        periodo: '2025-Q3',
-        fecha_completada: '2025-09-28',
-        puntuacion_final: 4.8
-      }
-    ];
+  procesarEvaluacionesCompletadas(evaluaciones: any[]): void {
+    const completadas = evaluaciones
+      .filter(ev => ev.estado === 'Completada')
+      .map(ev => {
+        const colaborador = this.colaboradoresMap.get(ev.id_evaluado);
+        return {
+          id_evaluacion: ev.id_evaluacion,
+          id_colaborador: ev.id_evaluado,
+          nombre_colaborador: colaborador?.nombre || 'N/A',
+          apellido_colaborador: colaborador?.apellido || '',
+          cargo: colaborador?.cargo || 'N/A',
+          periodo: ev.periodo,
+          fecha_completada: ev.fecha_modificacion || ev.fecha_creacion,
+          puntaje_total: ev.puntaje_total || 0
+        };
+      });
 
-    this.historialEvaluaciones = [
-      ...this.evaluacionesCompletadas,
-      {
-        id: 3,
-        colaborador: colaboradoresEjemplo[0],
-        periodo: '2025-Q2',
-        fecha_completada: '2025-06-30',
-        puntuacion_final: 4.3
-      },
-      {
-        id: 4,
-        colaborador: colaboradoresEjemplo[1],
-        periodo: '2025-Q2',
-        fecha_completada: '2025-06-29',
-        puntuacion_final: 4.7
-      },
-      {
-        id: 5,
-        colaborador: colaboradoresEjemplo[0],
-        periodo: '2025-Q1',
-        fecha_completada: '2025-03-31',
-        puntuacion_final: 4.2
+    // Últimas 5 completadas
+    this.evaluacionesCompletadas = completadas.slice(0, 5);
+    
+    // Todas para el historial
+    this.historialEvaluaciones = completadas;
+  }
+
+  extraerPeriodos(): void {
+    const periodos = new Set<string>();
+    
+    this.historialEvaluaciones.forEach(ev => {
+      if (ev.periodo) {
+        periodos.add(ev.periodo);
       }
-    ];
+    });
+    
+    this.periodosDisponibles = Array.from(periodos).sort((a, b) => b.localeCompare(a));
   }
 
   cambiarTab(tab: 'pendientes' | 'completadas' | 'historial'): void {
     this.tabActivo = tab;
   }
 
-  iniciarEvaluacion(colaboradorId: number): void {
-    // Navegar a la vista de evaluación con el ID del colaborador
-    this.router.navigate(['/manager/evaluar'], {
-      queryParams: { userId: colaboradorId }
-    });
+  iniciarEvaluacion(evaluacionId: number): void {
+    // Navegar a la vista de realizar evaluación (usa el ID de la evaluación)
+    this.router.navigate(['/manager/realizar-evaluacion', evaluacionId]);
   }
 
   verDetalleEvaluacion(evaluacionId: number): void {
@@ -225,8 +201,7 @@ export class EvaluacionesComponent implements OnInit {
     const fecha = new Date();
     const anio = fecha.getFullYear();
     const mes = fecha.getMonth() + 1;
-    
-    let trimestre = Math.ceil(mes / 3);
+    const trimestre = Math.ceil(mes / 3);
     return `${anio}-Q${trimestre}`;
   }
 
@@ -240,7 +215,9 @@ export class EvaluacionesComponent implements OnInit {
 
     // Filtrar por colaborador
     if (this.filtroColaborador !== 'todos') {
-      resultado = resultado.filter(ev => ev.colaborador.id_usuario.toString() === this.filtroColaborador);
+      resultado = resultado.filter(ev => 
+        ev.id_colaborador.toString() === this.filtroColaborador
+      );
     }
 
     return resultado;
@@ -250,11 +227,40 @@ export class EvaluacionesComponent implements OnInit {
     const colaboradores = new Map<number, Colaborador>();
     
     this.historialEvaluaciones.forEach(ev => {
-      if (!colaboradores.has(ev.colaborador.id_usuario)) {
-        colaboradores.set(ev.colaborador.id_usuario, ev.colaborador);
+      const col = this.colaboradoresMap.get(ev.id_colaborador);
+      if (col && !colaboradores.has(ev.id_colaborador)) {
+        colaboradores.set(ev.id_colaborador, col);
       }
     });
 
     return Array.from(colaboradores.values());
   }
+
+  // Métodos auxiliares para la vista
+  getEstadoColor(diasRestantes: number): string {
+    if (diasRestantes <= 0) return 'danger';
+    if (diasRestantes < 7) return 'warning';
+    return 'success';
+  }
+
+  getPuntuacionColor(puntaje: number): string {
+    if (puntaje >= 4.5) return 'success';
+    if (puntaje >= 4.0) return 'info';
+    if (puntaje >= 3.5) return 'warning';
+    return 'danger';
+  }
+
+  formatearPuntaje(puntaje: any): string {
+  if (puntaje === null || puntaje === undefined) {
+    return 'N/A';
+  }
+  // Convertir a número si es string
+  const numero = typeof puntaje === 'number' ? puntaje : parseFloat(puntaje);
+  
+  if (isNaN(numero)) {
+    return 'N/A';
+  }
+  
+  return numero.toFixed(1);
+}
 }

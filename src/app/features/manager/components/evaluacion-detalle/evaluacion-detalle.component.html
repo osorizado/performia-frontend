@@ -1,0 +1,101 @@
+<div class="detalle-container">
+  <!-- Header -->
+  <div class="detalle-header">
+    <button class="btn-back" (click)="volver()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Volver
+    </button>
+    <h1>Detalle de Evaluación</h1>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando evaluación...</p>
+  </div>
+
+  <!-- Contenido -->
+  <div *ngIf="!loading && evaluacion" class="detalle-content">
+    <!-- Info del evaluado -->
+    <div class="info-card" *ngIf="evaluacion.evaluado">
+      <h2>Información del Colaborador</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Nombre:</span>
+          <span class="value">{{ evaluacion.evaluado.nombre }} {{ evaluacion.evaluado.apellido }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Cargo:</span>
+          <span class="value">{{ evaluacion.evaluado.cargo }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Área:</span>
+          <span class="value">{{ evaluacion.evaluado.area }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info de la evaluación -->
+    <div class="info-card">
+      <h2>Información de la Evaluación</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Formulario:</span>
+          <span class="value">{{ evaluacion.formulario ? evaluacion.formulario.nombre_formulario : 'N/A' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Tipo:</span>
+          <span class="value">{{ evaluacion.tipo_evaluacion }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Período:</span>
+          <span class="value">{{ evaluacion.periodo }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Estado:</span>
+          <span class="badge" [ngClass]="getEstadoBadgeClass(evaluacion.estado)">
+            {{ evaluacion.estado }}
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="label">Fecha Inicio:</span>
+          <span class="value">{{ evaluacion.fecha_inicio | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Fecha Fin:</span>
+          <span class="value">{{ evaluacion.fecha_fin | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-item" *ngIf="evaluacion.puntaje_total">
+          <span class="label">Puntaje Total:</span>
+          <span class="value score">{{ evaluacion.puntaje_total }}/5.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="info-card" *ngIf="evaluacion.observaciones_generales">
+      <h2>Observaciones Generales</h2>
+      <p class="observaciones">{{ evaluacion.observaciones_generales }}</p>
+    </div>
+
+    <!-- Respuestas -->
+    <div class="info-card" *ngIf="evaluacion.respuestas && evaluacion.respuestas.length > 0">
+      <h2>Respuestas</h2>
+      <div class="respuestas-list">
+        <div *ngFor="let respuesta of evaluacion.respuestas" class="respuesta-item">
+          <h3>{{ respuesta.pregunta }}</h3>
+          <p class="respuesta-valor">Calificación: {{ respuesta.valor }}/5</p>
+          <p class="respuesta-comentario" *ngIf="respuesta.comentario">{{ respuesta.comentario }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sin datos -->
+  <div *ngIf="!loading && !evaluacion" class="empty-state">
+    <h2>No se encontró la evaluación</h2>
+    <button class="btn-primary" (click)="volver()">Volver a Evaluaciones</button>
+  </div>
+</div>

@@ -103,9 +103,11 @@ export class EvaluacionesService {
   }
 
   // POST /api/evaluaciones/{evaluacion_id}/responder - Responder evaluación
-  responderEvaluacion(evaluacionId: number, respuestas: RespuestaEvaluacion[]): Observable<any> {
+  responderEvaluacion(evaluacionId: number, respuestas: any[]): Observable<any> {
     return this.http.post(`${this.apiUrl}/${evaluacionId}/responder`, 
-      { respuestas }, 
+      { 
+        resultados: respuestas  // ⭐ Cambiar de 'respuestas' a 'resultados'
+      }, 
       { headers: this.getHeaders() }
     );
   }
@@ -137,4 +139,74 @@ export class EvaluacionesService {
       headers: this.getHeaders()
     });
   }
+
+  // ============================================================================
+  // MÉTODOS ESPECÍFICOS PARA MANAGERS
+  // ============================================================================
+
+  /**
+   * Obtiene las evaluaciones pendientes que el manager debe completar
+   * (donde el manager es el evaluador)
+   */
+  getEvaluacionesPendientesManager(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/equipo/pendientes-manager`, {
+      headers: this.getHeaders()
+    });
+  }
+
+  /**
+   * Obtiene TODAS las evaluaciones del equipo del manager
+   * (tanto las que debe completar como las autoevaluaciones de sus colaboradores)
+   */
+  getEvaluacionesEquipo(params?: {
+    estado?: string;
+    periodo?: string;
+    tipo?: string;
+  }): Observable<any[]> {
+    let url = `${this.apiUrl}/equipo/todas`;
+    const queryParams: string[] = [];
+    
+    if (params?.estado) {
+      queryParams.push(`estado=${params.estado}`);
+    }
+    if (params?.periodo) {
+      queryParams.push(`periodo=${params.periodo}`);
+    }
+    if (params?.tipo) {
+      queryParams.push(`tipo=${params.tipo}`);
+    }
+    
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join('&')}`;
+    }
+    
+    return this.http.get<any[]>(url, {
+      headers: this.getHeaders()
+    });
+  }
+
+  /**
+   * Obtiene las evaluaciones completadas del equipo
+   */
+  getEvaluacionesEquipoCompletadas(): Observable<any[]> {
+    return this.getEvaluacionesEquipo({ estado: 'Completada' });
+  }
+
+  /**
+   * Obtiene las autoevaluaciones de los colaboradores del manager
+   */
+  getAutoevaluacionesEquipo(estado?: string): Observable<any[]> {
+    let url = `${this.apiUrl}/equipo/autoevaluaciones`;
+    
+    if (estado) {
+      url += `?estado=${estado}`;
+    }
+    
+    return this.http.get<any[]>(url, {
+      headers: this.getHeaders()
+    });
+  }
+  getEvaluacionById(id: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/${id}`);  // ✅ Corregido
+}
 }

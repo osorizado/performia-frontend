@@ -10,8 +10,8 @@
     <!-- Header -->
     <div class="evaluaciones-header">
       <div class="header-content">
-        <h1>Evaluaciones</h1>
-        <p class="subtitle">Gestiona las evaluaciones de desempeño de tu equipo</p>
+        <h1>Evaluaciones de Desempeño</h1>
+        <p class="subtitle">Gestiona las evaluaciones de tu equipo</p>
       </div>
     </div>
 
@@ -25,7 +25,9 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         Pendientes
-        <span class="badge-count" *ngIf="evaluacionesPendientes.length > 0">{{ evaluacionesPendientes.length }}</span>
+        <span class="badge-count" *ngIf="evaluacionesPendientes.length > 0">
+          {{ evaluacionesPendientes.length }}
+        </span>
       </button>
       
       <button 
@@ -36,6 +38,9 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         Completadas
+        <span class="badge-count" *ngIf="evaluacionesCompletadas.length > 0">
+          {{ evaluacionesCompletadas.length }}
+        </span>
       </button>
       
       <button 
@@ -52,20 +57,20 @@
     <!-- TAB: Evaluaciones Pendientes -->
     <div *ngIf="tabActivo === 'pendientes'" class="tab-content">
       <div class="section-header">
-        <h2>Evaluaciones Pendientes por Completar</h2>
-        <p class="section-subtitle">Colaboradores que necesitan ser evaluados</p>
+        <h2>Evaluaciones Pendientes</h2>
+        <p class="section-subtitle">Evaluaciones que debes completar</p>
       </div>
 
       <div *ngIf="evaluacionesPendientes.length > 0" class="evaluaciones-grid">
         <div *ngFor="let evaluacion of evaluacionesPendientes" class="evaluacion-card">
           <div class="card-header">
             <div class="colaborador-avatar">
-              {{ evaluacion.colaborador.nombre.charAt(0) }}{{ evaluacion.colaborador.apellido.charAt(0) }}
+              {{ evaluacion.nombre_colaborador.charAt(0) }}{{ evaluacion.apellido_colaborador.charAt(0) }}
             </div>
             <div class="colaborador-info">
-              <h3>{{ evaluacion.colaborador.nombre }} {{ evaluacion.colaborador.apellido }}</h3>
-              <p class="cargo">{{ evaluacion.colaborador.cargo }}</p>
-              <p class="periodo">Periodo: {{ evaluacion.periodo }}</p>
+              <h3>{{ evaluacion.nombre_colaborador }} {{ evaluacion.apellido_colaborador }}</h3>
+              <p class="cargo">{{ evaluacion.cargo }}</p>
+              <p class="periodo">{{ evaluacion.periodo }}</p>
             </div>
           </div>
 
@@ -75,31 +80,29 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>Fecha límite: {{ evaluacion.fecha_limite | date: 'dd/MM/yyyy' }}</span>
+                <span>Límite: {{ evaluacion.fecha_fin | date: 'dd/MM/yyyy' }}</span>
               </div>
-              <div class="info-item" [ngClass]="{'text-danger': getDiasRestantes(evaluacion.fecha_limite) < 7}">
+              <div class="info-item" 
+                   [ngClass]="'text-' + getEstadoColor(getDiasRestantes(evaluacion.fecha_fin))">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span *ngIf="getDiasRestantes(evaluacion.fecha_limite) > 0">
-                  {{ getDiasRestantes(evaluacion.fecha_limite) }} días restantes
+                <span *ngIf="getDiasRestantes(evaluacion.fecha_fin) > 0">
+                  {{ getDiasRestantes(evaluacion.fecha_fin) }} días restantes
                 </span>
-                <span *ngIf="getDiasRestantes(evaluacion.fecha_limite) <= 0" class="text-danger">
+                <span *ngIf="getDiasRestantes(evaluacion.fecha_fin) <= 0">
                   ¡Vencida!
                 </span>
               </div>
             </div>
 
-            <div class="autoevaluacion-status" *ngIf="evaluacion.autoevaluacion_completada">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Autoevaluación completada</span>
+            <div class="tipo-evaluacion">
+              <span class="badge badge-info">{{ evaluacion.tipo_evaluacion }}</span>
             </div>
           </div>
 
           <div class="card-footer">
-            <button class="btn-primary" (click)="iniciarEvaluacion(evaluacion.colaborador.id_usuario)">
+            <button class="btn-primary" (click)="iniciarEvaluacion(evaluacion.id_evaluacion)">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
@@ -114,31 +117,31 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <h2>No hay evaluaciones pendientes</h2>
-        <p>Todos tus colaboradores han sido evaluados en el periodo actual</p>
+        <p>Todas las evaluaciones han sido completadas</p>
       </div>
     </div>
 
     <!-- TAB: Evaluaciones Completadas -->
     <div *ngIf="tabActivo === 'completadas'" class="tab-content">
       <div class="section-header">
-        <h2>Evaluaciones Completadas</h2>
-        <p class="section-subtitle">Evaluaciones que has completado recientemente</p>
+        <h2>Evaluaciones Completadas Recientes</h2>
+        <p class="section-subtitle">Últimas 5 evaluaciones completadas</p>
       </div>
 
       <div *ngIf="evaluacionesCompletadas.length > 0" class="evaluaciones-list">
         <div *ngFor="let evaluacion of evaluacionesCompletadas" class="evaluacion-item">
           <div class="item-avatar">
-            {{ evaluacion.colaborador.nombre.charAt(0) }}{{ evaluacion.colaborador.apellido.charAt(0) }}
+            {{ evaluacion.nombre_colaborador.charAt(0) }}{{ evaluacion.apellido_colaborador.charAt(0) }}
           </div>
           
           <div class="item-info">
-            <h3>{{ evaluacion.colaborador.nombre }} {{ evaluacion.colaborador.apellido }}</h3>
-            <p class="cargo">{{ evaluacion.colaborador.cargo }}</p>
+            <h3>{{ evaluacion.nombre_colaborador }} {{ evaluacion.apellido_colaborador }}</h3>
+            <p class="cargo">{{ evaluacion.cargo }}</p>
           </div>
 
           <div class="item-details">
             <div class="detail-item">
-              <span class="label">Periodo:</span>
+              <span class="label">Período:</span>
               <span class="value">{{ evaluacion.periodo }}</span>
             </div>
             <div class="detail-item">
@@ -147,12 +150,14 @@
             </div>
             <div class="detail-item">
               <span class="label">Puntuación:</span>
-              <span class="value puntuacion">{{ evaluacion.puntuacion_final }}/5.0</span>
+              <span class="value puntuacion" [ngClass]="'text-' + getPuntuacionColor(evaluacion.puntaje_total)">
+                {{ formatearPuntaje(evaluacion.puntaje_total) }}/5.0
+              </span>
             </div>
           </div>
 
           <div class="item-actions">
-            <button class="btn-secondary btn-sm" (click)="verDetalleEvaluacion(evaluacion.id)">
+            <button class="btn-secondary btn-sm" (click)="verDetalleEvaluacion(evaluacion.id_evaluacion)">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -175,20 +180,19 @@
     <!-- TAB: Historial -->
     <div *ngIf="tabActivo === 'historial'" class="tab-content">
       <div class="section-header">
-        <h2>Historial de Evaluaciones</h2>
+        <h2>Historial Completo de Evaluaciones</h2>
         <p class="section-subtitle">Todas las evaluaciones realizadas</p>
       </div>
 
       <!-- Filtros -->
       <div class="filters-bar">
         <div class="filter-group">
-          <label for="filtroPeriodo">Periodo:</label>
+          <label for="filtroPeriodo">Período:</label>
           <select id="filtroPeriodo" [(ngModel)]="filtroPeriodo" class="filter-select">
-            <option value="todos">Todos los periodos</option>
-            <option value="2025-Q4">Q4 2025</option>
-            <option value="2025-Q3">Q3 2025</option>
-            <option value="2025-Q2">Q2 2025</option>
-            <option value="2025-Q1">Q1 2025</option>
+            <option value="todos">Todos los períodos</option>
+            <option *ngFor="let periodo of periodosDisponibles" [value]="periodo">
+              {{ periodo }}
+            </option>
           </select>
         </div>
 
@@ -213,10 +217,9 @@
             <tr>
               <th>Colaborador</th>
               <th>Cargo</th>
-              <th>Periodo</th>
+              <th>Período</th>
               <th>Fecha</th>
               <th>Puntuación</th>
-              <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -225,22 +228,24 @@
               <td>
                 <div class="table-colaborador">
                   <div class="mini-avatar">
-                    {{ evaluacion.colaborador.nombre.charAt(0) }}{{ evaluacion.colaborador.apellido.charAt(0) }}
+                    {{ evaluacion.nombre_colaborador.charAt(0) }}{{ evaluacion.apellido_colaborador.charAt(0) }}
                   </div>
-                  <span>{{ evaluacion.colaborador.nombre }} {{ evaluacion.colaborador.apellido }}</span>
+                  <span>{{ evaluacion.nombre_colaborador }} {{ evaluacion.apellido_colaborador }}</span>
                 </div>
               </td>
-              <td>{{ evaluacion.colaborador.cargo }}</td>
+              <td>{{ evaluacion.cargo }}</td>
               <td>{{ evaluacion.periodo }}</td>
               <td>{{ evaluacion.fecha_completada | date: 'dd/MM/yyyy' }}</td>
               <td>
-                <span class="puntuacion-badge">{{ evaluacion.puntuacion_final }}/5.0</span>
+                <span class="puntuacion-badge" 
+                      [ngClass]="'badge-' + getPuntuacionColor(evaluacion.puntaje_total)">
+                  {{ formatearPuntaje(evaluacion.puntaje_total) }}/5.0
+                </span>
               </td>
               <td>
-                <span class="badge badge-success">Completada</span>
-              </td>
-              <td>
-                <button class="btn-icon" (click)="verDetalleEvaluacion(evaluacion.id)" title="Ver detalle">
+                <button class="btn-icon" 
+                        (click)="verDetalleEvaluacion(evaluacion.id_evaluacion)" 
+                        title="Ver detalle">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />

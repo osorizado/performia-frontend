@@ -597,4 +597,100 @@ toggleActivarFormulario(formulario: Formulario): void {
       year: 'numeric'
     });
   }
+  asignarEvaluaciones(formulario: any): void {
+  if (formulario.estado !== 'Activo') {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Formulario no activo',
+      text: 'Solo puedes asignar evaluaciones de formularios activos',
+      confirmButtonColor: '#4F46E5'
+    });
+    return;
+  }
+
+  Swal.fire({
+    title: '¿Asignar evaluaciones?',
+    html: `
+      <div style="text-align: left; padding: 0 20px;">
+        <p>Se creará una evaluación para todos los usuarios del rol:</p>
+        <strong style="color: #4F46E5;">${this.getNombreRol(formulario.rol_aplicable)}</strong>
+        <br><br>
+        <div style="margin-bottom: 15px;">
+          <label for="periodo-input" style="display: block; font-weight: 600; margin-bottom: 5px;">Período:</label>
+          <input type="text" id="periodo-input" class="swal2-input" style="margin: 0; width: 100%;" placeholder="2025" value="${new Date().getFullYear()}">
+        </div>
+        <div>
+          <label for="dias-input" style="display: block; font-weight: 600; margin-bottom: 5px;">Días de plazo:</label>
+          <input type="number" id="dias-input" class="swal2-input" style="margin: 0; width: 100%;" placeholder="21" value="21" min="1" max="90">
+        </div>
+      </div>
+    `,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, asignar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#4F46E5',
+    cancelButtonColor: '#6B7280',
+    preConfirm: () => {
+      const periodo = (document.getElementById('periodo-input') as HTMLInputElement).value;
+      const dias = parseInt((document.getElementById('dias-input') as HTMLInputElement).value);
+      
+      if (!periodo || !dias || dias < 1) {
+        Swal.showValidationMessage('Por favor completa todos los campos correctamente');
+        return false;
+      }
+      
+      return { periodo, dias };
+    }
+  }).then((result) => {
+    if (result.isConfirmed && result.value) {
+      this.loading = true;
+
+      const asignacion = {
+        id_formulario: formulario.id_formulario,
+        rol_id: formulario.rol_aplicable,
+        periodo: result.value.periodo,
+        tipo_evaluacion: 'Autoevaluación',
+        dias_plazo: result.value.dias
+      };
+
+      this.http.post(`${this.apiUrl}/evaluaciones/asignar-masiva`, asignacion)
+        .subscribe({
+          next: (response: any) => {
+            this.loading = false;
+            
+            const detalleHTML = `
+              <div style="text-align: left; padding: 0 20px;">
+                <p><strong>Formulario:</strong> ${response.formulario_nombre}</p>
+                <p><strong>Período:</strong> ${response.periodo}</p>
+                <p><strong>Evaluaciones creadas:</strong> ${response.evaluaciones_creadas.length}</p>
+                ${response.evaluaciones_existentes.length > 0 ? 
+                  `<p style="color: #F59E0B;"><strong>Ya existentes:</strong> ${response.evaluaciones_existentes.length}</p>` 
+                  : ''}
+                <p><strong>Fecha inicio:</strong> ${response.fecha_inicio}</p>
+                <p><strong>Fecha fin:</strong> ${response.fecha_fin}</p>
+              </div>
+            `;
+            
+            Swal.fire({
+              icon: 'success',
+              title: '¡Evaluaciones asignadas!',
+              html: detalleHTML,
+              confirmButtonColor: '#4F46E5'
+            });
+          },
+          error: (error) => {
+            this.loading = false;
+            console.error('Error al asignar evaluaciones:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.detail || 'No se pudieron asignar las evaluaciones',
+              confirmButtonColor: '#4F46E5'
+            });
+          }
+        });
+    }
+  });
+}
 }

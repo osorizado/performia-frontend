@@ -8,7 +8,9 @@ import { ManagerLayoutComponent } from './components/manager-layout.component';
 import { ManagerDashboardComponent } from './components/dashboard/dashboard.component';
 import { MiEquipoComponent } from './components/mi-equipo/mi-equipo.component';
 import { EvaluacionesComponent } from './components/evaluaciones/evaluaciones.component';
-import { EvaluarColaboradorComponent } from './components/evaluar-colaborador/evaluar-colaborador.component';  // ← AGREGAR
+import { EvaluarColaboradorComponent } from './components/evaluar-colaborador/evaluar-colaborador.component';
+import { RealizarEvaluacionComponent } from './components/realizar-evaluacion/realizar-evaluacion.component';
+import { EvaluacionDetalleComponent } from './components/evaluacion-detalle/evaluacion-detalle.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,9 @@ import { EvaluarColaboradorComponent } from './components/evaluar-colaborador/ev
     ManagerDashboardComponent,
     MiEquipoComponent,
     EvaluacionesComponent,
-    EvaluarColaboradorComponent  // ← AGREGAR
+    EvaluarColaboradorComponent,
+    RealizarEvaluacionComponent,
+    EvaluacionDetalleComponent
   ],
   imports: [
     CommonModule,

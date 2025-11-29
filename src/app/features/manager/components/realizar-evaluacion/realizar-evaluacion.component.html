@@ -1,0 +1,161 @@
+<div class="evaluar-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando evaluación...</p>
+  </div>
+
+  <!-- Vista Principal -->
+  <div *ngIf="!loading && evaluacion" class="evaluacion-main">
+    <!-- Header -->
+    <div class="evaluacion-header">
+      <button class="btn-back" (click)="cancelar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Volver
+      </button>
+      <div class="header-info">
+        <h1>{{ formulario?.nombre_formulario || 'Evaluación de Desempeño' }}</h1>
+        <p class="periodo">
+          Período: {{ evaluacion.periodo }} | Tipo: {{ evaluacion.tipo_evaluacion }}
+          <span *ngIf="colaborador"> | Colaborador: {{ colaborador.nombre }} {{ colaborador.apellido }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Formulario de Evaluación -->
+    <form [formGroup]="evaluacionForm" class="evaluacion-form">
+      
+      <!-- Mensaje si no hay preguntas -->
+      <div *ngIf="!tienePreguntas()" class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h2>Sin preguntas disponibles</h2>
+        <p>Este formulario de evaluación no tiene preguntas configuradas.</p>
+        <button type="button" class="btn-primary" (click)="cancelar()">
+          Volver a Evaluaciones
+        </button>
+      </div>
+
+      <!-- Preguntas agrupadas por categoría -->
+      <div *ngIf="tienePreguntas()">
+        <div *ngFor="let categoria of getCategorias()" class="categoria-section">
+          <h2 class="categoria-titulo">{{ categoria }}</h2>
+          
+          <div *ngFor="let pregunta of getPreguntasPorCategoria(categoria)" class="pregunta-card">
+            <div class="pregunta-text">
+              <p class="pregunta-label">{{ pregunta.texto_pregunta }}</p>
+              <span *ngIf="pregunta.requerido" class="required">*</span>
+            </div>
+
+            <!-- Pregunta tipo escala -->
+            <div *ngIf="pregunta.tipo_pregunta === 'escala'" class="evaluacion-row">
+              <div class="calificacion-buttons">
+                <button
+                  *ngFor="let valor of [1, 2, 3, 4, 5]"
+                  type="button"
+                  class="calificacion-btn"
+                  [class.active]="evaluacionForm.get('pregunta_' + pregunta.id_pregunta)?.value === valor"
+                  (click)="responderPregunta(pregunta.id_pregunta, valor)">
+                  {{ valor }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Pregunta tipo texto -->
+            <div *ngIf="pregunta.tipo_pregunta === 'texto'" class="texto-container">
+              <textarea 
+                [formControlName]="'pregunta_' + pregunta.id_pregunta"
+                rows="3"
+                placeholder="Escribe tu respuesta aquí..."></textarea>
+            </div>
+
+            <!-- Comentario adicional -->
+            <div class="comentario-container">
+              <label>Comentario adicional (opcional):</label>
+              <textarea 
+                [formControlName]="'comentario_' + pregunta.id_pregunta"
+                rows="2"
+                placeholder="Agrega un comentario si lo deseas..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Si no hay categorías, mostrar todas las preguntas -->
+        <div *ngIf="getCategorias().length === 0" class="categoria-section">
+          <h2 class="categoria-titulo">Evaluación</h2>
+          
+          <div *ngFor="let pregunta of todasLasPreguntas()" class="pregunta-card">
+            <div class="pregunta-text">
+              <p class="pregunta-label">{{ pregunta.texto_pregunta }}</p>
+              <span *ngIf="pregunta.requerido" class="required">*</span>
+            </div>
+
+            <!-- Pregunta tipo escala -->
+            <div *ngIf="pregunta.tipo_pregunta === 'escala'" class="evaluacion-row">
+              <div class="calificacion-buttons">
+                <button
+                  *ngFor="let valor of [1, 2, 3, 4, 5]"
+                  type="button"
+                  class="calificacion-btn"
+                  [class.active]="evaluacionForm.get('pregunta_' + pregunta.id_pregunta)?.value === valor"
+                  (click)="responderPregunta(pregunta.id_pregunta, valor)">
+                  {{ valor }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Pregunta tipo texto -->
+            <div *ngIf="pregunta.tipo_pregunta === 'texto'" class="texto-container">
+              <textarea 
+                [formControlName]="'pregunta_' + pregunta.id_pregunta"
+                rows="3"
+                placeholder="Escribe tu respuesta aquí..."></textarea>
+            </div>
+
+            <!-- Comentario adicional -->
+            <div class="comentario-container">
+              <label>Comentario adicional (opcional):</label>
+              <textarea 
+                [formControlName]="'comentario_' + pregunta.id_pregunta"
+                rows="2"
+                placeholder="Agrega un comentario si lo deseas..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Observaciones Generales -->
+        <div class="retroalimentacion-section">
+          <h2 class="section-titulo">Observaciones Generales</h2>
+          <p class="section-descripcion">Proporciona comentarios constructivos</p>
+          
+          <textarea
+            formControlName="observaciones_generales"
+            class="retroalimentacion-textarea"
+            rows="5"
+            placeholder="Escribe tus observaciones generales aquí..."></textarea>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cancelar()" [disabled]="guardando">
+            Cancelar
+          </button>
+          <button 
+            type="button" 
+            class="btn-primary btn-submit" 
+            (click)="onSubmit()" 
+            [disabled]="guardando || !evaluacionForm.valid">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span *ngIf="!guardando">Completar Evaluación</span>
+            <span *ngIf="guardando">Enviando...</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
