@@ -1,5 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.performia.com/api',
-  apiVersion: 'v1'
+  apiUrl: 'https://18.209.122.73:8000/api',
 };
